@@ -30,6 +30,7 @@ import './fields/field-object'
 import './fields/field-externalref-checkboxes'
 import './fields/field-boolean-radio-buttons'
 import './fields/field-stepper'
+import './fields/field-complexkeychoice'
 import FieldWrapper from "../../../FieldWrapper";
 
 /**

@@ -26,11 +26,13 @@ export class JourneyStep extends LitElement {
     }
 
     render() {
-        return html`<mateu-view 
+        return html`
+        <mateu-view 
                 .view=${this.step?.view}
                 journeyTypeId="${this.journeyTypeId}"
                 journeyId="${this.journeyId}" 
                 stepId="${this.stepId}"
+                .step=${this.step}
                 baseUrl="${this.baseUrl}"
                 previousStepId="${this.step?.previousStepId}"
         ><slot></slot></mateu-view>`

@@ -41,6 +41,7 @@ export const mapInputTypeToFieldType =  (type: string, stereotype: string):strin
         case 'ExternalReference[]': return 'field-externalref-array';
         case 'URL': return 'field-url';
         case 'Stepper': return 'field-stepper';
+        case 'ComplexKeyChoice': return 'field-complexkeychoice';
     }
     return 'field-object'
 }

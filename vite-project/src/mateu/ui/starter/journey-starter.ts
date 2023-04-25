@@ -231,10 +231,7 @@ export class JourneyStarter extends LitElement {
 
     static styles = css`
     :host {
-      width: 90%;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem;    
+        width: clamp(45ch, 100%, 1400px);
     }
     
     .card-journey-type {

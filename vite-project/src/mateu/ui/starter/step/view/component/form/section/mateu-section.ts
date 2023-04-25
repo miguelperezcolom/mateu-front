@@ -5,6 +5,7 @@ import './fieldGroup/mateu-fieldgroup'
 import {FormElement} from "../mateu-form";
 import Field from "../../../../../../../api/dtos/Field";
 import Value from "../../../../../../../api/dtos/Value";
+import Form from "../../../../../../../api/dtos/Form";
 
 /**
  * An example element.
@@ -22,6 +23,9 @@ export class MateuSection extends LitElement {
 
   @property()
   section!: Section
+
+    @property()
+    form!: Form
 
   @property()
   formElement!: FormElement;
@@ -41,7 +45,7 @@ export class MateuSection extends LitElement {
 
         ${this.section.caption?html`<h2>${this.section.caption}</h2>`:''}
         
-        ${this.section.readOnly?html`
+        ${this.form.readOnly || this.section.readOnly?html`
           ${this.section.fieldGroups.map(g => html`
               ${g.caption?html`<h3>${g.caption}</h3>`:''}
               <div class="table">

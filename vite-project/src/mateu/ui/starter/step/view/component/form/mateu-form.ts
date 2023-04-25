@@ -185,13 +185,6 @@ export class MateuForm extends LitElement implements FormElement {
     })
   }
 
-  async goBack() {
-    this.dispatchEvent(new CustomEvent('back-requested', {
-      bubbles: true,
-      composed: true,
-      detail: this.previousStepId}))
-  }
-
   async runAction(event: Event) {
     const actionId = (event.target as HTMLElement).getAttribute('actionId');
     if (!actionId) {
@@ -242,8 +235,8 @@ export class MateuForm extends LitElement implements FormElement {
         
         <vaadin-horizontal-layout class="header">
           <div>
-            <h1>${this.metadata.title}</h1>
-            <h3>${this.metadata.subtitle}</h3>
+            <h3>${this.metadata.title}</h3>
+            <h5>${this.metadata.subtitle}</h5>
           </div>
           <vaadin-horizontal-layout style="justify-content: end; flex-grow: 1; align-items: center;" theme="spacing">
             ${this.metadata.actions.map(a => html`
@@ -259,15 +252,12 @@ export class MateuForm extends LitElement implements FormElement {
             </div>        
         `:''}
         
-        ${this.metadata.sections.map(s => html`<mateu-section .section="${s}"
+        ${this.metadata.sections.map(s => html`<mateu-section .section="${s}" .form="${this.metadata}"
                                                               baseUrl="${this.baseUrl}"
                                                               .formElement=${this}></mateu-section>`)}
 
         <vaadin-horizontal-layout style="justify-content: end;" theme="spacing">
           <slot></slot>
-          ${this.previousStepId?html`
-            <vaadin-button theme="secondary" @click=${this.goBack}>Back</vaadin-button>
-          `:''}
           ${this.metadata.mainActions.map(a => html`
             <vaadin-button theme="${ActionType.Primary == a.type?'primary':'secondary'}" @click=${this.runAction} actionId=${a.id}>${a.caption}</vaadin-button>
           `)}
@@ -326,8 +316,7 @@ export class MateuForm extends LitElement implements FormElement {
   .header {
   width: 100%;
   }
-
-
+  
     vaadin-button {
         margin-left: 10px;
     }    

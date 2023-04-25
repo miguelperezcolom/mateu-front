@@ -3,6 +3,7 @@ import {css, html, LitElement} from "lit";
 import Component from "../../../../../api/dtos/Component";
 import {ViewType} from "../../../../../api/dtos/ViewType";
 import './form/mateu-form'
+import './card/mateu-card'
 import './crud/mateu-crud'
 import './result/mateu-result'
 import '../../../journey-starter'
@@ -10,6 +11,7 @@ import '../../journey-step'
 import JourneyStarter from "../../../../../api/dtos/JourneyStarter";
 import JourneyRunner from "../../../../../api/dtos/JourneyRunner";
 import Crud from "../../../../../api/dtos/Crud";
+import Step from "../../../../../api/dtos/Step";
 
 
 @customElement('mateu-component')
@@ -31,20 +33,36 @@ export class MateuComponent extends LitElement {
     stepId!: string
 
     @property()
+    step!: Step
+
+    @property()
     previousStepId: string | undefined
 
 
     render() {
         return html`
+
+            ${this.component?.metadata.type == ViewType.Card?
+                    html`<mateu-card
+                            .metadata=${this.component.metadata}
+                            .data=${this.step.data}
+                            journeyTypeId="${this.journeyTypeId}"
+                            journeyId="${this.journeyId}"
+                            stepId="${this.stepId}"
+                            .rules=${this.step.rules}
+                            baseUrl="${this.baseUrl}"
+                            previousStepId="${this.previousStepId}"
+                    ><slot></slot></mateu-card>`
+                    :html``}
         
             ${this.component?.metadata.type == ViewType.Form?
                     html`<mateu-form 
                             .metadata=${this.component.metadata} 
-                            .data=${this.component.data}
+                            .data=${this.step.data}
                             journeyTypeId="${this.journeyTypeId}"
                             journeyId="${this.journeyId}" 
                             stepId="${this.stepId}"
-                            .rules=${this.component.rules}
+                            .rules=${this.step.rules}
                             baseUrl="${this.baseUrl}"
                             previousStepId="${this.previousStepId}"
                     ><slot></slot></mateu-form>`
@@ -53,24 +71,25 @@ export class MateuComponent extends LitElement {
             ${this.component?.metadata.type == ViewType.Crud?
                     html`<mateu-crud 
                             .metadata=${this.component.metadata} 
-                            .data=${this.component.data}
+                            .data=${this.step.data}
                             journeyTypeId="${this.journeyTypeId}"
                             journeyId="${this.journeyId}" 
                             stepId="${this.stepId}"
                             listId="${(this.component.metadata as Crud).listId}"
-                            .rules=${this.component.rules}
+                            .rules=${this.step.rules}
                             baseUrl="${this.baseUrl}"
                             previousStepId="${this.previousStepId}"
+                            searchSignature="${this.journeyId}-${this.stepId}-${(this.component.metadata as Crud).listId}"
                     ><slot></slot></mateu-crud>`
                     :html``}
 
             ${this.component?.metadata.type == ViewType.Result?
                     html`<mateu-result 
                             .metadata=${this.component.metadata} 
-                            .data=${this.component.data}
+                            .data=${this.step.data}
                             journeyTypeId="${this.journeyTypeId}"
                             journeyId="${this.journeyId}" stepId="${this.stepId}"
-                            .rules=${this.component.rules}
+                            .rules=${this.step.rules}
                             baseUrl="${this.baseUrl}"
                             previousStepId="${this.previousStepId}"
                     ><slot></slot></mateu-result>`
@@ -94,6 +113,11 @@ export class MateuComponent extends LitElement {
     }
 
     static styles = css`
+    
+      :host {
+    width: 100%;
+    display: block;
+  }
     
   `
 }

@@ -53,6 +53,10 @@ export class MateuCrud extends LitElement {
   listId!: string
 
   @property()
+  searchSignature!: string
+
+
+  @property()
   metadata!: Crud
 
   @property()
@@ -117,17 +121,38 @@ export class MateuCrud extends LitElement {
   };
 
   async updated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has("journeyId")) {
+    if (changedProperties.has("searchSignature")
+    || changedProperties.has("journeyId")
+    || changedProperties.has("stepId")
+    || changedProperties.has("listId")) {
+      let searchSignature = this.searchSignature;
+      if (changedProperties.has("searchSignature")) {
+        searchSignature = changedProperties.get("searchSignature") as string;
+      }
+      let journeyId = this.journeyId;
+      if (changedProperties.has("journeyId")) {
+        journeyId = changedProperties.get("journeyId") as string;
+      }
+      let stepId = this.stepId;
+      if (changedProperties.has("stepId")) {
+        stepId = changedProperties.get("stepId") as string;
+      }
+      let listId = this.listId;
+      if (changedProperties.has("listId")) {
+        listId = changedProperties.get("listId") as string;
+      }
       this.setUp();
-      if (changedProperties.get("journeyId") && this.journeyId) {
-        this.search();
+      if (searchSignature == journeyId + '-' + stepId + '-' + listId) {
+        setTimeout(() => this.search());
       }
     }
   }
 
   search() {
-    const grid = this.shadowRoot!.getElementById('grid') as Grid;
-    grid.clearCache();
+    if (this.searchSignature == this.journeyId + '-' + this.stepId + '-' + this.listId) {
+      const grid = this.shadowRoot!.getElementById('grid') as Grid;
+      grid.clearCache();
+    }
   }
 
   async fetchData(params: {
@@ -328,8 +353,8 @@ export class MateuCrud extends LitElement {
 
       <vaadin-horizontal-layout class="header">
         <div>
-          <h1>${this.metadata.title}</h1>
-          <h3>${this.metadata.subtitle}</h3>
+          <h3>${this.metadata.title}</h3>
+          <h5>${this.metadata.subtitle}</h5>
         </div>
         <vaadin-horizontal-layout style="justify-content: end; flex-grow: 1; align-items: center;" theme="spacing">
           ${this.metadata.actions.map(a => html`
