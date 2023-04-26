@@ -285,7 +285,7 @@ export class MateuCrud extends LitElement {
     // @ts-ignore
     const extendedData = { ...this.data, ...obj}
     await new MateuApiClient(this.baseUrl).runStepAction(this.journeyTypeId, this.journeyId, this.stepId,
-        '__list__' + this.listId + '__row__' + e.detail.value.id, extendedData)
+        '__list__' + this.listId + '__row__' + e.detail.value.methodNameInCrud, extendedData)
   }
 
   private getThemeForBadgetType(type: StatusType): string {
