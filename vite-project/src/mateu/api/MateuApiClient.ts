@@ -6,6 +6,8 @@ import Step from "./dtos/Step";
 
 export default class MateuApiClient {
 
+    axiosInstance = axios.create({timeout: 10000})
+
     baseUrl = ''
 
     constructor(baseUrl: string) {
@@ -28,29 +30,40 @@ export default class MateuApiClient {
             }))
             return response
         }).catch((reason) => {
-            dispatchEvent(new CustomEvent('backend-failed-event', {
-                bubbles: true,
-                composed: true,
-                detail: {
-                    reason: reason
-                }
-            }))
+            if (reason.code == 'ERR_CANCELED') {
+                dispatchEvent(new CustomEvent('backend-cancelled-event', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                    }
+                }))
+            } else {
+                console.log('error on api call', reason)
+                dispatchEvent(new CustomEvent('backend-failed-event', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        reason: reason
+                    }
+                }))
+            }
             return reason
         })
     }
 
     async fetchUi(uiId: string): Promise<UI> {
-        return await this.wrap<UI>(axios.get(this.baseUrl + '/uis/' + uiId)
+        return await this.wrap<UI>(this.axiosInstance.get(this.baseUrl + '/uis/' + uiId)
             .then((response) => response.data))
     }
 
     async fetchJourneyTypes(): Promise<JourneyType[]> {
-        return await this.wrap<JourneyType[]>(axios.get(this.baseUrl + '/journey-types')
+        return await this.wrap<JourneyType[]>(this.axiosInstance.get(this.baseUrl + '/journey-types')
             .then((response) => response.data))
     }
 
     async createJourney(journeyType: string, journeyId: string): Promise<void> {
-        return await this.wrap<void>(axios.post(this.baseUrl + '/journeys/' + journeyType + '/' + journeyId,
+        return await this.wrap<void>(this.axiosInstance.post(this.baseUrl + '/journeys/'
+            + journeyType + '/' + journeyId,
             {
                     contextData: []
                 }
@@ -58,19 +71,20 @@ export default class MateuApiClient {
     }
 
     async fetchJourney(journeyType: string, journeyId: string): Promise<Journey> {
-        return await this.wrap<Journey>(axios.get(this.baseUrl + '/journeys/' + journeyType + '/' + journeyId)
+        return await this.wrap<Journey>(this.axiosInstance.get(this.baseUrl + '/journeys/'
+            + journeyType + '/' + journeyId)
                 .then((response) => response.data))
     }
 
     async fetchStep(journeyType: string, journeyId: string, stepId: string): Promise<Step> {
-        return await this.wrap<Step>(axios.get(this.baseUrl + '/journeys/' +
+        return await this.wrap<Step>(this.axiosInstance.get(this.baseUrl + '/journeys/' +
             journeyType + '/' + journeyId + '/steps/' + stepId)
                 .then((response) => response.data))
     }
 
     async runStepAction(journeyType: string, journeyId: string, stepId: string, actionId: string,
                         data: unknown): Promise<void> {
-        return await this.wrap<void>(axios.post(this.baseUrl + '/journeys/' +
+        return await this.wrap<void>(this.axiosInstance.post(this.baseUrl + '/journeys/' +
             journeyType + '/' + journeyId + '/steps/' + stepId
                 + '/' + actionId, {
                     data: data
@@ -86,21 +100,25 @@ export default class MateuApiClient {
         })
     }
 
-    async fetchRows(journeyType: string, journeyId: string, stepId: string, listId: string,
+    async fetchRows(abortController: AbortController, journeyType: string, journeyId: string, stepId: string, listId: string,
                     page: number, pageSize: number,
                     sortOrders: string, filters: string
                     ): Promise<any[]> {
-        return await this.wrap<any[]>(axios.get(this.baseUrl + "/journeys/" + journeyType + '/' + journeyId +
+        return await this.wrap<any[]>(this.axiosInstance.get(this.baseUrl + "/journeys/" + journeyType
+            + '/' + journeyId +
             "/steps/" + stepId +
             "/lists/" + listId + "/rows?page=" + page + "&page_size=" + pageSize +
-            "&ordering=" + sortOrders + "&filters=" + filters)
+            "&ordering=" + sortOrders + "&filters=" + filters, {
+            signal: abortController.signal
+        })
             .then((response) => response.data))
     }
 
     async fetchCount(journeyType: string, journeyId: string, stepId: string, listId: string,
                      filters: string
     ): Promise<number> {
-        return await this.wrap<number>(axios.get(this.baseUrl + "/journeys/" + journeyType + '/' + journeyId
+        return await this.wrap<number>(this.axiosInstance.get(this.baseUrl + "/journeys/" + journeyType
+            + '/' + journeyId
             + "/steps/" + stepId +
             "/lists/" + listId + "/count?filters=" + filters)
             .then((response) => response.data))

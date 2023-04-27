@@ -95,14 +95,18 @@ export class MateuCrud extends LitElement {
   @property()
   confirmationTexts: ConfirmationTexts | undefined;
 
+  @state()
+  fetchRowsAbortController0 = new AbortController()
+
+  @state()
+  fetchRowsAbortController1 = new AbortController()
+
 
   @state()
   dataProvider: GridDataProvider<any> = async (params, callback) => {
     const { page, pageSize } = params;
 
-    console.log('data', this.data)
-
-    const { rows, count } = await this.fetchData({
+    this.fetchData({
       page,
       pageSize,
       sortOrders: Base64.encode(JSON.stringify(params.sortOrders.map(o => {
@@ -115,9 +119,17 @@ export class MateuCrud extends LitElement {
         }
       }))),
       filters: Base64.encode(JSON.stringify(this.data)),
+    }).catch((error) => {
+      console.log('error', error)
+    }).then(result => {
+      const {rows, count} = result!
+      // @ts-ignore
+      if (rows.code || count.code) {
+        console.log('fetch returned error or cancelled')
+        return
+      }
+      callback(rows, count);
     });
-
-    callback(rows, count);
   };
 
   async updated(changedProperties: Map<string, unknown>) {
@@ -177,7 +189,10 @@ export class MateuCrud extends LitElement {
     filters: string;
     sortOrders: string;
   }): Promise<any[]> {
-    return new MateuApiClient(this.baseUrl).fetchRows(this.journeyTypeId, this.journeyId,
+    this.fetchRowsAbortController0.abort()
+    this.fetchRowsAbortController0 = this.fetchRowsAbortController1
+    this.fetchRowsAbortController1 = new AbortController()
+    return new MateuApiClient(this.baseUrl).fetchRows(this.fetchRowsAbortController1, this.journeyTypeId, this.journeyId,
         this.stepId, this.listId, params.page, params.pageSize,
         params.sortOrders, params.filters)
   }

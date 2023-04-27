@@ -66,16 +66,25 @@ export class JourneyStarter extends LitElement {
     onBackendCalled = () => {
         this.activeCalls++;
         this.loading = this.activeCalls > 0
+        console.log('active calls', this.activeCalls)
     }
 
     onBackendSucceeded = () => {
         this.activeCalls--;
         this.loading = this.activeCalls > 0
+        console.log('active calls', this.activeCalls)
+    }
+
+    onBackendCancelled = () => {
+        this.activeCalls--;
+        this.loading = this.activeCalls > 0
+        console.log('active calls', this.activeCalls)
     }
 
     onBackendFailed = (event: Event) => {
         this.activeCalls--;
         this.loading = this.activeCalls > 0
+        console.log('active calls', this.activeCalls)
         const ce = event as CustomEvent
         this.notificationMessage = `${ce.detail.reason.code} ${ce.detail.reason.message}`;
         if (ce.detail.reason.response?.data) {
@@ -102,6 +111,7 @@ export class JourneyStarter extends LitElement {
 
         window.addEventListener('backend-called-event', this.onBackendCalled)
         window.addEventListener('backend-succeeded-event', this.onBackendSucceeded)
+        window.addEventListener('backend-cancelled-event', this.onBackendCancelled)
         window.addEventListener('backend-failed-event', this.onBackendFailed)
         window.addEventListener('action-called', this.onActionCalled)
         window.addEventListener('back-requested', this.onBackRequested)
@@ -125,6 +135,7 @@ export class JourneyStarter extends LitElement {
 
         window.removeEventListener('backend-called-event', this.onBackendCalled)
         window.removeEventListener('backend-succeeded-event', this.onBackendSucceeded)
+        window.removeEventListener('backend-cancelled-event', this.onBackendCancelled)
         window.removeEventListener('backend-failed-event', this.onBackendFailed)
         window.removeEventListener('action-called', this.onActionCalled)
         window.removeEventListener('back-requested', this.onBackRequested)
