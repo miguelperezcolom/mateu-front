@@ -1,5 +1,5 @@
 import {css, html, LitElement, PropertyValues} from 'lit'
-import {customElement, property} from 'lit/decorators.js'
+import {customElement, property, state} from 'lit/decorators.js'
 import Form from "../../../../../../api/dtos/Form";
 import './section/mateu-section'
 import '@vaadin/horizontal-layout'
@@ -41,10 +41,14 @@ export class MateuForm extends LitElement implements FormElement {
       return this.fieldsMap.map.get(field);
   }
 
+  @state()
+  valueChangedKey: string | undefined
+
   valueChanged(key: string, value: object): void {
     const obj = {};
     // @ts-ignore
     obj[key] = value;
+    this.valueChangedKey = key
     this.data = { ...this.data, ...obj}
     this.runRules()
   }
@@ -55,21 +59,39 @@ export class MateuForm extends LitElement implements FormElement {
   }
 
   runRules() {
+    console.log('runRules')
     this.metadata.sections
         .flatMap(s => s.fieldGroups)
         .flatMap(g => g.lines)
         .flatMap(l => l.fields)
         .map(f => this.fieldsMap.map.get(f))
         .filter(f => f)
-        .forEach(f => f!.setVisible(true));
+        .forEach(f => {
+          f!.setVisible(true)
+          f!.setEnabled(true)
+        });
 
-    this.rules.forEach(r => this.applyRule(r))
+    for (const r of this.rules) {
+      const applied = this.applyRule(r);
+      if (applied) {
+        if ('Stop' == r.result) {
+          break;
+        }
+      }
+    }
   }
 
-  applyRule(r: Rule) {
+  hasChanged(fieldName: string): boolean {
+    console.log('hasChanged?', fieldName, this.valueChangedKey);
+    return fieldName == this.valueChangedKey
+  }
+
+  applyRule(r: Rule): boolean {
     try {
       const applies = eval(this.buildJs(r.filter));
       if (applies) {
+        this.valueChangedKey = undefined
+        console.log('filter applies', r.filter)
         if ("Hide" == r.action) {
           const fieldIds = r.data as string[];
           this.metadata.sections
@@ -83,10 +105,29 @@ export class MateuForm extends LitElement implements FormElement {
                 f!.setVisible(false)
               });
         }
+        if ("Disable" == r.action) {
+          const fieldIds = r.data as string[];
+          this.metadata.sections
+              .flatMap(s => s.fieldGroups)
+              .flatMap(g => g.lines)
+              .flatMap(l => l.fields)
+              .filter(f => fieldIds?.includes(f.id))
+              .map(f => this.fieldsMap.map.get(f))
+              .forEach(f => {
+                console.log('disabling field', f)
+                f!.setEnabled(false)
+              });
+        }
+        if ("RunAction" == r.action) {
+          const actionId = r.data as string;
+          this.doRunAction(actionId)
+        }
+        return true;
       }
     } catch (e) {
 
     }
+    return false;
   }
 
   buildJs(filter: string): string {
@@ -95,6 +136,8 @@ export class MateuForm extends LitElement implements FormElement {
       js += 'const ' + key + ' = this.getValue("' + key + '");';
     }
     js += '' + filter;
+    js = js.replace('hasChanged(', 'this.hasChanged(')
+    console.log('js', js)
     return js
   }
 
@@ -191,12 +234,12 @@ export class MateuForm extends LitElement implements FormElement {
       console.log('Attribute actionId is missing for ' + event.target)
       return
     }
+    await this.doRunAction(actionId);
+  }
+
+  async doRunAction(actionId: string) {
     const action = this.findAction(actionId!)
-    if (!action) {
-      console.log('No action with id ' + actionId)
-      return
-    }
-    if (action.validationRequired) {
+    if (action?.validationRequired) {
       const requiredFields = this.metadata.sections
           .flatMap(s => s.fieldGroups
           .flatMap(g => g.lines)
@@ -212,7 +255,7 @@ export class MateuForm extends LitElement implements FormElement {
         return
       }
     }
-    if (action.confirmationRequired) {
+    if (action?.confirmationRequired) {
       this.confirmationAction = async () => {
         await new MateuApiClient(this.baseUrl).runStepAction(this.journeyTypeId, this.journeyId, this.stepId, actionId!, this.data)
       }

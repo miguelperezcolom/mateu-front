@@ -4,7 +4,7 @@ export default interface Rule {
 
     action: string;
 
-    data: object;
+    data: unknown;
 
     result: string;
 
