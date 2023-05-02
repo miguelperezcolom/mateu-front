@@ -76,17 +76,16 @@ export class MateuUi extends LitElement {
         }
     }
 
-    selectJourney(event: Event) {
-        let journeyTypeId = (event.currentTarget as HTMLElement).getAttribute('journeytypeid');
-        // @ts-ignore
-        this.journeyTypeId = journeyTypeId
-    }
-
     itemSelected(event: MenuBarItemSelectedEvent) {
         let item = event.detail.value as MyMenuBarItem
-        this.journeyTypeId = item.journeyTypeId
-        document.title = item.text!;
-        window.history.pushState({},"", '#' + this.journeyTypeId!);
+        console.log('itemselected', item)
+        new MateuApiClient('').abortAll();
+        this.journeyTypeId = undefined;
+        setTimeout(() => {
+            this.journeyTypeId = item.journeyTypeId
+            document.title = item.text!;
+            window.history.pushState({},"", '#' + this.journeyTypeId!);
+        })
     }
 
     login() {
@@ -144,13 +143,13 @@ export class MateuUi extends LitElement {
                 </div>
                 -->
                 
-                ${this.ui.homeJourneyTypeId && !this.journeyTypeId?html`
+                    ${this.ui.homeJourneyTypeId && !this.journeyTypeId?html`
 
                     <journey-starter journeytypeid="${this.ui.homeJourneyTypeId}" baseUrl="${this.baseUrl}"></journey-starter>
                     
                 `:''}
 
-            ${this.journeyTypeId?html`
+                    ${this.journeyTypeId?html`
 
                     <journey-starter journeytypeid=${this.journeyTypeId} baseUrl="${this.baseUrl}"></journey-starter>
                     

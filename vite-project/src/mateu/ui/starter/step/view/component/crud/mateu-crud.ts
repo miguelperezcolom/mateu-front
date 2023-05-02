@@ -96,13 +96,6 @@ export class MateuCrud extends LitElement {
   confirmationTexts: ConfirmationTexts | undefined;
 
   @state()
-  fetchRowsAbortController0 = new AbortController()
-
-  @state()
-  fetchRowsAbortController1 = new AbortController()
-
-
-  @state()
   dataProvider: GridDataProvider<any> = async (params, callback) => {
     const { page, pageSize } = params;
 
@@ -189,10 +182,7 @@ export class MateuCrud extends LitElement {
     filters: string;
     sortOrders: string;
   }): Promise<any[]> {
-    this.fetchRowsAbortController0.abort()
-    this.fetchRowsAbortController0 = this.fetchRowsAbortController1
-    this.fetchRowsAbortController1 = new AbortController()
-    return new MateuApiClient(this.baseUrl).fetchRows(this.fetchRowsAbortController1, this.journeyTypeId, this.journeyId,
+    return new MateuApiClient(this.baseUrl).fetchRows(this.journeyTypeId, this.journeyId,
         this.stepId, this.listId, params.page, params.pageSize,
         params.sortOrders, params.filters)
   }
