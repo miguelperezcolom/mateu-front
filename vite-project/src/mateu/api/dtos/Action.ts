@@ -5,14 +5,16 @@ export default interface Action {
 
     id: string
 
-    caption: string;
+    caption: string
 
-    type: ActionType;
+    type: ActionType
 
-    validationRequired: boolean;
+    visible: boolean
 
-    confirmationRequired: boolean;
+    validationRequired: boolean
 
-    confirmationTexts: ConfirmationTexts;
+    confirmationRequired: boolean
+
+    confirmationTexts: ConfirmationTexts
 
 }

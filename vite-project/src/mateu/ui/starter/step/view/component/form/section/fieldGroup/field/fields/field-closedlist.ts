@@ -45,7 +45,8 @@ export class FieldClosedList extends LitElement implements Component {
             return
         }
         const raw = value as [];
-        this.value = raw.map(v => '' + v);
+        // @ts-ignore
+        this.value = raw.map(v => '' + v.value?v.value:v);
     }
 
     setBaseUrl(value: string): void {
@@ -67,19 +68,29 @@ export class FieldClosedList extends LitElement implements Component {
 
     @property()
     onChange = (e:CheckboxGroupValueChangedEvent) => {
-        console.log('onchange', e.detail.value)
-        this.onValueChanged({fieldId: this.field!.id,
-            value: e.detail.value})
+        if (this.value != e.detail.value) {
+            console.log('value change', this.value, e.detail.value)
+            this.onValueChanged({fieldId: this.field!.id,
+                value: e.detail.value})
+        }
     }
 
     @property()
-    value: string[] | undefined;
+    value: unknown[] | undefined;
 
     @property()
     enabled = true;
 
     @property()
     field: Field | undefined;
+
+    getValue(v: Value): unknown {
+        if (!v || !v.value) {
+            return undefined
+        }
+        // @ts-ignore
+        return v.value.value?v.value.value:v.value
+    }
 
 
     render() {
@@ -93,7 +104,7 @@ export class FieldClosedList extends LitElement implements Component {
                                 ?required=${this.required}
             >
                 ${this.field!.attributes.filter(a => a.key == 'choice').map(a => a.value as Value).map(v => html`
-                    <vaadin-checkbox .value=${'' + v.value} .label=${v.key} ></vaadin-checkbox>
+                    <vaadin-checkbox .value=${this.getValue(v)} .label=${v.key} ></vaadin-checkbox>
                     `)}
             </vaadin-checkbox-group>
             `

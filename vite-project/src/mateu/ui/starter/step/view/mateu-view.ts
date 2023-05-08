@@ -75,7 +75,7 @@ export class MateuView extends LitElement {
           <h1>${this.view?.title}</h1>
         `:''}
         ${this.view?.subtitle?html`
-          <h2>${this.view?.subtitle}</h2>
+          <p>${this.view?.subtitle}</p>
         `:''}
         
           <vaadin-vertical-layout style="width: 100%" theme="spacing-xl">

@@ -43,7 +43,12 @@ export class FieldFile extends LitElement implements Component {
         console.log(event)
     }
     setValue(value: unknown): void {
-        this.value = value as number;
+        console.log('value', value)
+        if (!value) {
+            this.value = [];
+            return
+        }
+        this.value = [value as File];
     }
 
     setBaseUrl(value: string): void {
@@ -80,7 +85,7 @@ export class FieldFile extends LitElement implements Component {
     }
 
     @property()
-    value: number | undefined;
+    value: File[] = [];
 
     @property()
     enabled = true;
@@ -105,7 +110,7 @@ export class FieldFile extends LitElement implements Component {
                 @files-changed=${this.onChange}
                            name="${this.name}" 
                            id="${this.name}"
-                           value=${this.value}
+                           .files=${this.value}
                    ?disabled=${!this.enabled}
                 ?required=${this.required}
                 placeholder="${this.placeholder}"

@@ -20,6 +20,7 @@ import {Base64} from "js-base64";
 import ConfirmationTexts from "../../../../../../api/dtos/ConfirmationTexts";
 import { dialogRenderer } from 'lit-vaadin-helpers';
 import { dialogFooterRenderer } from '@vaadin/dialog/lit';
+import {MenuBarItemSelectedEvent} from "@vaadin/menu-bar";
 
 
 /**
@@ -167,6 +168,12 @@ export class MateuCrud extends LitElement {
     sortOrders: string;
   }) {
     const rows = await this.fetchRows(params);
+
+    // @ts-ignore
+    if (rows.code == 'ERR_CANCELED') {
+      this.message = `Request cancelled`;
+      return {rows: [], count: 0}
+    }
 
     // Pagination
     const count = await this.fetchCount(params.filters);
@@ -352,6 +359,12 @@ export class MateuCrud extends LitElement {
   }
 
 
+  exportItemSelected(event: MenuBarItemSelectedEvent) {
+    let item = event.detail.value
+    console.log('itemselected', item)
+
+  }
+
   render() {
     // @ts-ignore
     return html`
@@ -359,7 +372,7 @@ export class MateuCrud extends LitElement {
       <vaadin-horizontal-layout class="header">
         <div>
           <h3>${this.metadata.title}</h3>
-          <h5>${this.metadata.subtitle}</h5>
+          <p>${this.metadata.subtitle}</p>
         </div>
         <vaadin-horizontal-layout style="justify-content: end; flex-grow: 1; align-items: center;" theme="spacing">
           ${this.metadata.actions.map(a => html`
@@ -463,6 +476,7 @@ export class MateuCrud extends LitElement {
                   {text: 'Csv'}
                 ] }]}
               theme="tertiary"
+              @item-selected="${this.exportItemSelected}"
           ></vaadin-menu-bar>
         </div>
       </vaadin-horizontal-layout>
@@ -516,3 +530,4 @@ declare global {
     'mateu-crud': MateuCrud
   }
 }
+//hola

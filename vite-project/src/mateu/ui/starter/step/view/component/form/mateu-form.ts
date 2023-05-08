@@ -279,10 +279,10 @@ export class MateuForm extends LitElement implements FormElement {
         <vaadin-horizontal-layout class="header">
           <div>
             <h3>${this.metadata.title}</h3>
-            <h5>${this.metadata.subtitle}</h5>
+            <p>${this.metadata.subtitle}</p>
           </div>
           <vaadin-horizontal-layout style="justify-content: end; flex-grow: 1; align-items: center;" theme="spacing">
-            ${this.metadata.actions.map(a => html`
+            ${this.metadata.actions.filter(a => a.visible).map(a => html`
             <vaadin-button theme="secondary" @click=${this.runAction} actionId=${a.id}>${a.caption}</vaadin-button>
           `)}
           </vaadin-horizontal-layout>

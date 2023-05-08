@@ -6,6 +6,7 @@ import {FormElement} from "../mateu-form";
 import Field from "../../../../../../../api/dtos/Field";
 import Value from "../../../../../../../api/dtos/Value";
 import Form from "../../../../../../../api/dtos/Form";
+import {unsafeHTML} from "lit-html/directives/unsafe-html.js";
 
 /**
  * An example element.
@@ -24,13 +25,17 @@ export class MateuSection extends LitElement {
   @property()
   section!: Section
 
-    @property()
-    form!: Form
+  @property()
+  form!: Form
 
   @property()
   formElement!: FormElement;
 
   getPaintableValue(field: Field, value: unknown) {
+      if (field.type == 'url[]') {
+          const values = value as string[]
+          return unsafeHTML(`${values.map(l => `<a href="${l}">${l}</a>`).join(', ')}`)
+      }
       if (field.type == 'ExternalReference[]') {
           const values = value as Value[]
           return values.map(v => v.key).join(', ');
@@ -39,18 +44,66 @@ export class MateuSection extends LitElement {
       return (value && value.key)?value.key:value;
   }
 
-  render() {
+  getColumnStyle(field: Field) {
+      if (field.stereotype == 'rawcontent') {
+          return 'fullWidth'
+      }
+      if (field.type == 'url[]') {
+          return 'fullWidth'
+      }
+      if (field.type == 'ExternalReference[]') {
+          return 'fullWidth'
+      }
+      if (field.stereotype == 'file') {
+          return 'hidden'
+      }
+      return '';
+  }
+
+    onValueChange(e: CustomEvent) {
+        this.formElement.valueChanged(e.detail.key, e.detail.value)
+    }
+
+    getStyle(f: Field) {
+        const width = f.attributes.find(a => a.key == 'width')?.value;
+        if (width) {
+            return 'width: ' + width + ';'
+        }
+        return 'flex-grow: 1;'
+    }
+
+    getFieldHtml(f: Field) {
+          if (f.stereotype == 'rawcontent') {
+              return unsafeHTML(`<div class="fullWidth">${this.formElement.getValue(f.id)}</div>`)
+          }
+        return f.observed?html`
+                  <mateu-field .field="${f}" 
+                                                  @change=${this.onValueChange}
+                                                    baseUrl=${this.baseUrl}
+                                                    .formElement=${this.formElement} 
+                                                    .value=${this.formElement.getValue(f.id)} 
+                                                    .fieldWrapper=${this.formElement.getFieldWrapper(f)}
+            style="${this.getStyle(f)}">
+            </mateu-field>
+                      `:html`
+                  <div class="field ${this.getColumnStyle(f)}"><div class="cell caption">${f.caption}</div>
+                  <div class="cell value">${this.getPaintableValue(f, this.formElement.getValue(f.id))}</div></div>
+              `
+    }
+
+
+    render() {
     return html`
       <div class="mateu-section ${this.section.type}">
 
         ${this.section.caption?html`<h2>${this.section.caption}</h2>`:''}
+          ${this.section.description?html`<p>${this.section.description}</p>`:''}
         
         ${this.form.readOnly || this.section.readOnly?html`
           ${this.section.fieldGroups.map(g => html`
               ${g.caption?html`<h3>${g.caption}</h3>`:''}
               <div class="table">
-              ${g.lines.flatMap(l => l.fields).map(f => html`<div class="field"><div class="cell caption">${f.caption}</div>
-                  <div class="cell value">${this.getPaintableValue(f, this.formElement.getValue(f.id))}</div></div>`)}
+              ${g.lines.flatMap(l => l.fields).map(f => this.getFieldHtml(f))}
               </div>
           </div>`)}
         `:html`
@@ -130,6 +183,14 @@ export class MateuSection extends LitElement {
     .cell {
         min-height: 2rem;
         padding-top: 5px;
+    }
+    
+    .fullWidth {
+        grid-column: 1 / span 2;
+    }
+    
+    .hidden {
+        display: none;
     }
     
     .caption {

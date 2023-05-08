@@ -3,20 +3,22 @@ import Attribute from "./Attribute";
 
 export default interface Field {
 
-    id: string;
+    id: string
 
-    type: string;
+    type: string
 
-    stereotype: string;
+    stereotype: string
 
-    caption: string;
+    observed: boolean
 
-    placeholder: string;
+    caption: string
 
-    description: string;
+    placeholder: string
 
-    validations: Validation[];
+    description: string
 
-    attributes: Attribute[];
+    validations: Validation[]
+
+    attributes: Attribute[]
 
 }

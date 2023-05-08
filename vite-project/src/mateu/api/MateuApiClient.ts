@@ -10,7 +10,7 @@ let fetchRowsAbortController1 = new AbortController()
 
 export default class MateuApiClient {
 
-    axiosInstance = axios.create({timeout: 10000})
+    axiosInstance = axios.create({timeout: 60000})
 
     baseUrl = ''
 
@@ -70,6 +70,7 @@ export default class MateuApiClient {
     }
 
     async get(uri: string): Promise<AxiosResponse> {
+        console.log('get', uri)
         const abortController =  new AbortController();
         abortControllers = [...abortControllers, abortController]
 
@@ -79,6 +80,7 @@ export default class MateuApiClient {
     }
 
     async post(uri: string, data: unknown): Promise<void> {
+        console.log('post', uri, data)
         const abortController =  new AbortController();
         abortControllers = [...abortControllers, abortController]
 

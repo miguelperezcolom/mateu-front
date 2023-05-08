@@ -59,14 +59,12 @@ export class MateuFieldGroup extends LitElement {
                                                     .value=${this.formElement.getValue(s.id)} 
                                                     .fieldWrapper=${this.formElement.getFieldWrapper(s)}
             style="${this.getStyle(s)}">
+            </mateu-field>
+        `)}
 
           </vaadin-horizontal-layout>
-          
-          
         
-        `)}
-        
-          </mateu-field>`)}
+          `)}
         
         <slot></slot>
       </div>

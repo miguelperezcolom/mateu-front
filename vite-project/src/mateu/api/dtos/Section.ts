@@ -3,16 +3,18 @@ import Action from "./Action";
 
 export default interface Section {
 
-    id: string;
+    id: string
 
-    caption: string;
+    caption: string
 
-    readOnly: boolean;
+    description: string
 
-    type: string;
+    readOnly: boolean
 
-    actions: Action[];
+    type: string
 
-    fieldGroups: FieldGroup[];
+    actions: Action[]
+
+    fieldGroups: FieldGroup[]
 
 }

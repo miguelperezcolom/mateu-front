@@ -208,10 +208,14 @@ export class JourneyStarter extends LitElement {
         this.previousStepId = this.step.previousStepId
     }
 
+    cancelAll() {
+        new MateuApiClient('').abortAll();
+    }
+
     render() {
         return html`
 
-            <div class="lds-roller" style="display: ${this.loading?'':'none'};"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <div class="lds-roller" style="display: ${this.loading?'':'none'};"  @click=${this.cancelAll}><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 
             ${!this.journeyTypeId?html`
 
@@ -282,6 +286,12 @@ export class JourneyStarter extends LitElement {
         border-radius: 7px;
     }
     
+    .cancel-all {
+        margin: auto;
+        position: absolute;
+        left: calc(50% - 17px);
+        top: calc(50% + 40px);
+    }
     
 .lds-roller {
   display: inline-block;
@@ -290,6 +300,7 @@ export class JourneyStarter extends LitElement {
   position: absolute;
   left: 50%;
   top: 50%;
+  z-index: 1000;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
