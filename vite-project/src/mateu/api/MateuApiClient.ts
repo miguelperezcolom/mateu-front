@@ -79,6 +79,17 @@ export default class MateuApiClient {
         });
     }
 
+    async getBlob(uri: string): Promise<AxiosResponse> {
+        console.log('get', uri)
+        const abortController =  new AbortController();
+        abortControllers = [...abortControllers, abortController]
+
+        return this.axiosInstance.get(uri, {
+            signal: abortController.signal
+            , responseType: 'blob'
+        });
+    }
+
     async post(uri: string, data: unknown): Promise<void> {
         console.log('post', uri, data)
         const abortController =  new AbortController();
@@ -165,6 +176,49 @@ export default class MateuApiClient {
             + "/steps/" + stepId +
             "/lists/" + listId + "/count?filters=" + filters)
             .then((response) => response.data))
+    }
+
+    async getCsv(journeyType: string, journeyId: string, stepId: string, listId: string,
+                 sortOrders: string, filters: string): Promise<void> {
+        window.open(this.baseUrl + "/journeys/" + journeyType
+            + '/' + journeyId +
+            "/steps/" + stepId +
+            "/lists/" + listId + "/csv?" +
+            "&ordering=" + sortOrders + "&filters=" + filters)
+    }
+
+    async getXls(journeyType: string, journeyId: string, stepId: string, listId: string,
+                 sortOrders: string, filters: string): Promise<void> {
+        window.open(this.baseUrl + "/journeys/" + journeyType
+            + '/' + journeyId +
+            "/steps/" + stepId +
+            "/lists/" + listId + "/xls?" +
+            "&ordering=" + sortOrders + "&filters=" + filters)
+    }
+
+    async getCsvMemory(journeyType: string, journeyId: string, stepId: string, listId: string,
+                 sortOrders: string, filters: string): Promise<void> {
+        window.open()
+        return await this.wrap<void>(this.getBlob(this.baseUrl + "/journeys/" + journeyType
+            + '/' + journeyId +
+            "/steps/" + stepId +
+            "/lists/" + listId + "/csv?" +
+            "&ordering=" + sortOrders + "&filters=" + filters)
+            .then((response) => {
+                // create file link in browser's memory
+                const href = URL.createObjectURL(response.data);
+
+                // create "a" HTML element with href to file & click
+                const link = document.createElement('a');
+                link.href = href;
+                link.setAttribute('download', 'file.csv'); //or any other extension
+                document.body.appendChild(link);
+                link.click();
+
+                // clean up "a" element & remove ObjectURL
+                document.body.removeChild(link);
+                URL.revokeObjectURL(href);
+            }))
     }
 
 }

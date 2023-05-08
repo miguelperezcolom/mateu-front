@@ -79,6 +79,13 @@ export class MateuCrud extends LitElement {
   @property()
   confirmationOpened = false;
 
+  @state()
+  lastFilters: string | undefined
+
+  @state()
+  lastSortOrders: string | undefined
+
+
   @property()
   closeConfirmation = () => {
     this.confirmationOpened = false
@@ -189,6 +196,8 @@ export class MateuCrud extends LitElement {
     filters: string;
     sortOrders: string;
   }): Promise<any[]> {
+    this.lastFilters = params.filters;
+    this.lastSortOrders = params.sortOrders;
     return new MateuApiClient(this.baseUrl).fetchRows(this.journeyTypeId, this.journeyId,
         this.stepId, this.listId, params.page, params.pageSize,
         params.sortOrders, params.filters)
@@ -362,7 +371,11 @@ export class MateuCrud extends LitElement {
   exportItemSelected(event: MenuBarItemSelectedEvent) {
     let item = event.detail.value
     console.log('itemselected', item)
-
+    if (item.text == 'Excel') {
+      new MateuApiClient(this.baseUrl).getXls(this.journeyTypeId, this.journeyId, this.stepId, this.listId, this.lastSortOrders!, this.lastFilters!)
+    } else if (item.text == 'Csv') {
+      new MateuApiClient(this.baseUrl).getCsv(this.journeyTypeId, this.journeyId, this.stepId, this.listId, this.lastSortOrders!, this.lastFilters!)
+    }
   }
 
   render() {
