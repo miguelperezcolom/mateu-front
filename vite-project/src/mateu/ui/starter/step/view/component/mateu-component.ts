@@ -3,6 +3,7 @@ import {css, html, LitElement} from "lit";
 import Component from "../../../../../api/dtos/Component";
 import {ViewType} from "../../../../../api/dtos/ViewType";
 import './form/mateu-form'
+import './stepper/mateu-stepper'
 import './card/mateu-card'
 import './crud/mateu-crud'
 import './result/mateu-result'
@@ -41,6 +42,20 @@ export class MateuComponent extends LitElement {
 
     render() {
         return html`
+
+            ${this.component?.metadata.type == ViewType.Stepper?
+                    html`<mateu-stepper
+                            .metadata=${this.component.metadata}
+                            .data=${this.step.data}
+                            journeyTypeId="${this.journeyTypeId}"
+                            journeyId="${this.journeyId}"
+                            stepId="${this.stepId}"
+                            .rules=${this.step.rules}
+                            baseUrl="${this.baseUrl}"
+                            previousStepId="${this.previousStepId}"
+                    ><slot></slot></mateu-stepper>`
+                    :html``}
+
 
             ${this.component?.metadata.type == ViewType.Card?
                     html`<mateu-card

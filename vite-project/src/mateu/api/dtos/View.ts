@@ -6,10 +6,14 @@ export default interface View {
 
     subtitle: string
 
+    header: ViewPart
+
     left: ViewPart
 
     main: ViewPart
 
     right: ViewPart
+
+    footer: ViewPart
 
 }

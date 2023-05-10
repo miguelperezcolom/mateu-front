@@ -52,6 +52,19 @@ export class MateuView extends LitElement {
 
     render() {
     return html`
+        <header>
+                ${this.view?.header?.components.map(c => html`<mateu-component
+                        .component=${c}
+                        journeyTypeId="${this.journeyTypeId}"
+                        journeyId="${this.journeyId}"
+                        stepId="${this.stepId}"
+                        .step=${this.step}
+                        baseUrl="${this.baseUrl}"
+                        previousStepId="${this.previousStepId}"
+                >
+                    <slot></slot></mateu-component>
+                `)}
+        </header>
       <aside class="left">
         ${this.view?.left?.components.map(c => html`<mateu-component
             .component=${c}
@@ -103,13 +116,28 @@ export class MateuView extends LitElement {
         >
           <slot></slot></mateu-component>
         `)}
-      </aside>`
+      </aside>
+        <footer>
+            ${this.view?.footer?.components.map(c => html`<mateu-component
+            .component=${c}
+            journeyTypeId="${this.journeyTypeId}"
+            journeyId="${this.journeyId}"
+            stepId="${this.stepId}"
+            .step=${this.step}
+            baseUrl="${this.baseUrl}"
+            previousStepId="${this.previousStepId}"
+        >
+          <slot></slot></mateu-component>
+        `)}
+        </footer>
+    `
   }
 
   static styles = css`
   
     :host {
       display: flex;
+      flex-wrap: wrap;
     }
 
     aside {
@@ -122,6 +150,10 @@ export class MateuView extends LitElement {
       flex: 1 1 0;
       padding: 2rem;
       width: clamp(45ch, 90%, 75ch);
+    }
+    
+    header {
+        flex-basis: 100%;
     }
     
     @media (max-width: 1200px) {

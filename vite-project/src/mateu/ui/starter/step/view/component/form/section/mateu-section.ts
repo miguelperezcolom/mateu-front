@@ -65,7 +65,8 @@ export class MateuSection extends LitElement {
     }
 
     getStyle(f: Field) {
-        const width = f.attributes.find(a => a.key == 'width')?.value;
+        let width = f.attributes.find(a => a.key == 'width')?.value;
+
         if (width) {
             return 'width: ' + width + ';'
         }
@@ -77,7 +78,7 @@ export class MateuSection extends LitElement {
               return unsafeHTML(`<div class="fullWidth">${this.formElement.getValue(f.id)}</div>`)
           }
         return f.observed?html`
-                  <mateu-field .field="${f}" 
+                  <mateu-field .field="${f}"  class="fullWidth"
                                                   @change=${this.onValueChange}
                                                     baseUrl=${this.baseUrl}
                                                     .formElement=${this.formElement} 
@@ -139,6 +140,8 @@ export class MateuSection extends LitElement {
     
     .mateu-section.Transparent {
       border: unset;
+      padding-left: 0px;
+      padding-right: 0px; 
     }
     
     .mateu-section:has(h1) {

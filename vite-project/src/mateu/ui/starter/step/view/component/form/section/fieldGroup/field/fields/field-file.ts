@@ -104,6 +104,12 @@ export class FieldFile extends LitElement implements Component {
 
     render() {
         return html`
+            <vaadin-custom-field
+                    label="${this.label}"
+                    ?required=${this.required}
+                    placeholder="${this.placeholder}"
+                    helper-text="${this.field?.description}"
+            >
             <vaadin-upload
                 label="${this.label}"
                 .maxFiles="${this.maxfiles}"
@@ -115,11 +121,20 @@ export class FieldFile extends LitElement implements Component {
                 ?required=${this.required}
                 placeholder="${this.placeholder}"
                     target="${this.baseUrl + '/files/' + this.fileidprefix + this.fileid}"></vaadin-upload>
+            </vaadin-custom-field>
             `
     }
 
     static styles = css`
-        vaadin-text-field {
+        
+        :host {
+            width: 100%;
+        }
+    
+        vaadin-custom-field {
+            width: 100%;
+        }
+        vaadin-upload {
             width: 100%;
         }
     `
