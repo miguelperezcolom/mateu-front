@@ -2,7 +2,7 @@ export default interface TelephonePrefix {
 
     key: string;
 
-    icon: string
+    img: string
 
     value: object;
 

@@ -119,7 +119,7 @@ export class FieldTelephone extends LitElement implements Component {
                   <vaadin-item value="${a.value}"  >
                     <div style="display: flex; align-items: center;">
                       <img
-                        src="https://flagcdn.com/${a.key}.svg"
+                        src="${a.img}"
                         style="width: var(--lumo-size-s); margin-right: var(--lumo-space-s);"
                       />
                       <div>
