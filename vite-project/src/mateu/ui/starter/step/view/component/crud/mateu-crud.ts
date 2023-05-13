@@ -8,6 +8,7 @@ import "@vaadin/vaadin-grid/vaadin-grid-selection-column";
 import "@vaadin/vaadin-grid/vaadin-grid-sort-column";
 import "@vaadin/vaadin-grid/vaadin-grid-column";
 import "../form/section/fieldGroup/field/fields/field-externalref"
+import "./mateu-paginator"
 import {columnBodyRenderer} from '@vaadin/grid/lit.js';
 import {Grid, GridDataProvider} from "@vaadin/vaadin-grid";
 import {Button} from "@vaadin/button";
@@ -104,7 +105,49 @@ export class MateuCrud extends LitElement {
   confirmationTexts: ConfirmationTexts | undefined;
 
   @state()
+  count = 0;
+
+  @state()
+  pageSize = 10;
+
+  @state()
+  page = 0;
+
   dataProvider: GridDataProvider<any> = async (params, callback) => {
+    //const { page, pageSize } = params;
+    const page = this.page;
+    const pageSize = this.pageSize;
+
+    this.fetchData({
+      page,
+      pageSize,
+      sortOrders: Base64.encode(JSON.stringify(params.sortOrders.map(o => {
+        let direction = 'None';
+        if ('asc' == o.direction) direction = 'Ascending';
+        if ('desc' == o.direction) direction = 'Descending';
+        return {
+          column: o.path,
+          order: direction
+        }
+      }))),
+      filters: Base64.encode(JSON.stringify(this.data)),
+    }).catch((error) => {
+      console.log('error', error)
+    }).then(result => {
+      const {rows, count} = result!
+      // @ts-ignore
+      if (rows.code || count.code) {
+        console.log('fetch returned error or cancelled')
+        return
+      }
+      const gridCount = count > pageSize?pageSize:count;
+      callback(rows, gridCount);
+    });
+  };
+
+
+  @state()
+  oldDataProvider: GridDataProvider<any> = async (params, callback) => {
     const { page, pageSize } = params;
 
     this.fetchData({
@@ -164,6 +207,7 @@ export class MateuCrud extends LitElement {
   search() {
     if (this.searchSignature == this.journeyId + '-' + this.stepId + '-' + this.listId) {
       const grid = this.shadowRoot!.getElementById('grid') as Grid;
+      this.page = 0;
       grid.clearCache();
     }
   }
@@ -183,11 +227,10 @@ export class MateuCrud extends LitElement {
     }
 
     // Pagination
-    const count = await this.fetchCount(params.filters);
+    this.count = await this.fetchCount(params.filters);
+    this.message = `${this.count} elements found.`;
 
-    this.message = `${count} elements found.`;
-
-    return { rows, count };
+    return { rows, count: this.count };
   }
 
   async fetchRows(params: {
@@ -378,6 +421,13 @@ export class MateuCrud extends LitElement {
     }
   }
 
+  pageChanged(e: CustomEvent) {
+    console.log('pageChanged', e.detail.page)
+    const grid = this.shadowRoot!.getElementById('grid') as Grid;
+    this.page = e.detail.page;
+    grid.clearCache();
+  }
+
   render() {
     // @ts-ignore
     return html`
@@ -459,7 +509,7 @@ export class MateuCrud extends LitElement {
           `:''}
         `)}
       </vaadin-horizontal-layout>
-      <vaadin-grid id="grid" .dataProvider="${this.dataProvider}">
+      <vaadin-grid id="grid" .dataProvider="${this.dataProvider}" all-rows-visible>
         <vaadin-grid-selection-column></vaadin-grid-selection-column>
 
       ${this.metadata?.columns.map(c => {
@@ -482,6 +532,18 @@ export class MateuCrud extends LitElement {
       
       <vaadin-horizontal-layout style="align-items: baseline; width: 100%;" theme="spacing">
         <div style=" flex-grow: 1;">${this.message}</div>
+        <div style="justify-content: end;">
+          <mateu-paginator
+                            journeyTypeId="${this.journeyTypeId}"
+                            journeyId="${this.journeyId}"
+                            stepId="${this.stepId}"
+                            baseUrl="${this.baseUrl}"
+                            @page-changed="${this.pageChanged}"
+                            count="${this.count}"
+                            pageSize="${this.pageSize}"
+                            .page=${this.page}
+            ></mateu-paginator>
+        </div>
         <div style="justify-content: end;">
           <vaadin-menu-bar
               .items=${[{ text: 'Export as ...', children: [
