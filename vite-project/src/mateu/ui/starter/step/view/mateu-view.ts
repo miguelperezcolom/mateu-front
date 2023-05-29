@@ -1,9 +1,10 @@
-import { LitElement, css, html } from 'lit'
-import { customElement, property } from 'lit/decorators.js'
+import {css, html, LitElement, PropertyValues} from 'lit'
+import {customElement, property} from 'lit/decorators.js'
 import './component/mateu-component';
 import './component/crud/mateu-crud';
 import View from "../../../../api/dtos/View";
 import Step from "../../../../api/dtos/Step";
+import {ViewType} from "../../../../api/dtos/ViewType";
 
 /**
  * An example element.
@@ -38,6 +39,8 @@ export class MateuView extends LitElement {
   @property()
   previousStepId!: string
 
+  @property()
+  crud: undefined | boolean = undefined
 
   connectedCallback() {
     super.connectedCallback();
@@ -48,6 +51,21 @@ export class MateuView extends LitElement {
             bubbles: true,
             composed: true,
             detail: this.previousStepId}))
+    }
+
+    async updated(changedProperties: PropertyValues) {
+      if (!changedProperties.has('crud')) {
+          this.crud = this.view?.main?.components?.length == 1
+              && this.view?.main?.components?.filter(c => c.metadata.type == ViewType.Crud).length > 0
+              // @ts-ignore
+              && this.view?.main?.components?.filter(c => c.metadata.type == ViewType.Crud)[0].metadata.columns.length > 2
+          ;
+          if (this.crud) {
+              this.setAttribute('crud', '')
+          } else {
+              this.removeAttribute('crud')
+          }
+      }
     }
 
     render() {
@@ -139,7 +157,7 @@ export class MateuView extends LitElement {
       display: flex;
       flex-wrap: wrap;
     }
-
+    
     aside {
       flex: 1 1 0;
       max-width: 250px;
@@ -154,6 +172,11 @@ export class MateuView extends LitElement {
     
     header {
         flex-basis: 100%;
+    }
+    
+    :host([crud]) aside {
+      display: none;
+      transition: 0.2s linear;
     }
     
     @media (max-width: 1200px) {
