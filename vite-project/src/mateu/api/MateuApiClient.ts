@@ -16,6 +16,16 @@ export default class MateuApiClient {
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl
+        this.axiosInstance.interceptors.request.use(config => {
+            const token = localStorage.getItem('__mateu_auth_token');
+            if (token) {
+                console.log('adding token' + token)
+                config.headers.Authorization =  'Bearer ' + token;
+            } else {
+                console.log('no token added')
+            }
+            return config;
+        })
     }
 
     async wrap<T>(call: Promise<T>): Promise<T> {
