@@ -141,38 +141,10 @@ export class MateuCrud extends LitElement {
         return
       }
       const gridCount = count > pageSize?pageSize:count;
+      rows.forEach((r, i) => {
+        r.__index = i + (page * pageSize);
+      })
       callback(rows, gridCount);
-    });
-  };
-
-
-  @state()
-  oldDataProvider: GridDataProvider<any> = async (params, callback) => {
-    const { page, pageSize } = params;
-
-    this.fetchData({
-      page,
-      pageSize,
-      sortOrders: Base64.encode(JSON.stringify(params.sortOrders.map(o => {
-        let direction = 'None';
-        if ('asc' == o.direction) direction = 'Ascending';
-        if ('desc' == o.direction) direction = 'Descending';
-        return {
-          column: o.path,
-          order: direction
-        }
-      }))),
-      filters: Base64.encode(JSON.stringify(this.data)),
-    }).catch((error) => {
-      console.log('error', error)
-    }).then(result => {
-      const {rows, count} = result!
-      // @ts-ignore
-      if (rows.code || count.code) {
-        console.log('fetch returned error or cancelled')
-        return
-      }
-      callback(rows, count);
     });
   };
 
@@ -296,7 +268,10 @@ export class MateuCrud extends LitElement {
     console.log(button.row);
     const obj = {
       // @ts-ignore
-      _selectedRow: button.row
+      _selectedRow: button.row,
+      // @ts-ignore
+      __index: button.row.__index,
+      __count: this.count
     };
     // @ts-ignore
     this.data = { ...this.data, ...obj}

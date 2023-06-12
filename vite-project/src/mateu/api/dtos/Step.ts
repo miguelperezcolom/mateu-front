@@ -6,7 +6,10 @@ export default interface Step {
     id: string;
     name: string;
     view: View;
-    data: Map<string, object>;
+    data: {
+        __index: number | undefined;
+        __count: number | undefined;
+    };
     rules: Rule[];
     previousStepId: string;
 

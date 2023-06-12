@@ -111,6 +111,30 @@ export class JourneyStarter extends LitElement {
         this.previousStepId = this.step.previousStepId
     }
 
+    onNextRequested = async (event: Event) => {
+        const ce = event as CustomEvent
+        const data = {
+            __index: ce.detail.__index,
+            __count: ce.detail.__count,
+        }
+        console.log('data', data, ce.detail)
+        await new MateuApiClient(this.baseUrl)
+            .runStepAction(this.journeyTypeId!, this.journeyId!, ce.detail.previousStepId, '__list__main__edit', data)
+        this.step = await new MateuApiClient(this.baseUrl)
+            .fetchStep(this.journeyTypeId!, this.journeyId!, this.stepId!)
+    }
+
+    onPreviousRequested = async (event: Event) => {
+        const ce = event as CustomEvent
+        const data = {
+            __index: ce.detail.__index,
+            __count: ce.detail.__count,
+        }
+        await new MateuApiClient(this.baseUrl)
+            .runStepAction(this.journeyTypeId!, this.journeyId!, ce.detail.previousStepId, '__list__main__edit', data)
+        this.step = await new MateuApiClient(this.baseUrl)
+            .fetchStep(this.journeyTypeId!, this.journeyId!, this.stepId!)
+    }
 
     async connectedCallback() {
         super.connectedCallback();
@@ -124,6 +148,8 @@ export class JourneyStarter extends LitElement {
         window.addEventListener('backend-failed-event', this.onBackendFailed)
         window.addEventListener('action-called', this.onActionCalled)
         window.addEventListener('back-requested', this.onBackRequested)
+        window.addEventListener('next-requested', this.onNextRequested)
+        window.addEventListener('previous-requested', this.onPreviousRequested)
 
         if (this.journeyTypeId) {
             this.journeyId = nanoid()
