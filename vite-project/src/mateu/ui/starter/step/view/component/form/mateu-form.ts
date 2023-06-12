@@ -59,7 +59,6 @@ export class MateuForm extends LitElement implements FormElement {
   }
 
   runRules() {
-    console.log('runRules')
     this.metadata.sections
         .flatMap(s => s.fieldGroups)
         .flatMap(g => g.lines)
@@ -82,7 +81,6 @@ export class MateuForm extends LitElement implements FormElement {
   }
 
   hasChanged(fieldName: string): boolean {
-    console.log('hasChanged?', fieldName, this.valueChangedKey);
     return fieldName == this.valueChangedKey
   }
 
@@ -91,7 +89,6 @@ export class MateuForm extends LitElement implements FormElement {
       const applies = eval(this.buildJs(r.filter));
       if (applies) {
         this.valueChangedKey = undefined
-        console.log('filter applies', r.filter)
         if ("Hide" == r.action) {
           const fieldIds = r.data as string[];
           this.metadata.sections
@@ -101,7 +98,6 @@ export class MateuForm extends LitElement implements FormElement {
               .filter(f => fieldIds?.includes(f.id))
               .map(f => this.fieldsMap.map.get(f))
               .forEach(f => {
-                console.log('hidding field', f)
                 f!.setVisible(false)
               });
         }
@@ -114,7 +110,6 @@ export class MateuForm extends LitElement implements FormElement {
               .filter(f => fieldIds?.includes(f.id))
               .map(f => this.fieldsMap.map.get(f))
               .forEach(f => {
-                console.log('disabling field', f)
                 f!.setEnabled(false)
               });
         }
@@ -137,7 +132,6 @@ export class MateuForm extends LitElement implements FormElement {
     }
     js += '' + filter;
     js = js.replace('hasChanged(', 'this.hasChanged(')
-    console.log('js', js)
     return js
   }
 

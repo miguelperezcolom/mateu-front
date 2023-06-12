@@ -69,7 +69,6 @@ export class JourneyStarter extends LitElement {
         }
         this.activeCalls++;
         this.loading = this.activeCalls > 0
-        console.log('active calls', 'called', this.activeCalls)
     }
 
     onBackendSucceeded = () => {
@@ -78,7 +77,6 @@ export class JourneyStarter extends LitElement {
             this.activeCalls = 0
         }
         this.loading = this.activeCalls > 0
-        console.log('active calls', 'succeeded', this.activeCalls)
     }
 
     onBackendCancelled = () => {
@@ -87,7 +85,6 @@ export class JourneyStarter extends LitElement {
             this.activeCalls = 0
         }
         this.loading = this.activeCalls > 0
-        console.log('active calls', 'cancelled', this.activeCalls)
     }
 
     onBackendFailed = (event: Event) => {
@@ -96,7 +93,6 @@ export class JourneyStarter extends LitElement {
             this.activeCalls = 0
         }
         this.loading = this.activeCalls > 0
-        console.log('active calls', 'failed', this.activeCalls)
         const ce = event as CustomEvent
         this.notificationMessage = `${ce.detail.reason.code} ${ce.detail.reason.message}`;
         if (ce.detail.reason.response?.data) {
@@ -110,7 +106,6 @@ export class JourneyStarter extends LitElement {
     onBackRequested = async (event: Event) => {
         const ce = event as CustomEvent
         this.stepId = ce.detail;
-        console.log('onbackrequested', this.stepId)
         this.step = await new MateuApiClient(this.baseUrl)
             .fetchStep(this.journeyTypeId!, this.journeyId!, this.stepId!)
         this.previousStepId = this.step.previousStepId
@@ -119,8 +114,6 @@ export class JourneyStarter extends LitElement {
 
     async connectedCallback() {
         super.connectedCallback();
-
-        console.log('connected', 'journey starter');
 
         this.activeCalls = 0;
         this.loading = this.activeCalls > 0
@@ -138,7 +131,6 @@ export class JourneyStarter extends LitElement {
             this.journey = await new MateuApiClient(this.baseUrl).fetchJourney(this.journeyTypeId, this.journeyId!)
             this.stepId = this.journey.currentStepId
             if (this.stepId) {
-                console.log('journeyTypeId onconnected is', this.journeyTypeId, this.stepId, this.journey)
                 this.step = await new MateuApiClient(this.baseUrl).fetchStep(this.journeyTypeId, this.journeyId, this.stepId)
                 this.previousStepId = this.step.previousStepId
             } else {
@@ -151,8 +143,6 @@ export class JourneyStarter extends LitElement {
 
     disconnectedCallback() {
         super.disconnectedCallback();
-
-        console.log('disconnected', 'journey starter');
 
         window.removeEventListener('backend-called-event', this.onBackendCalled)
         window.removeEventListener('backend-succeeded-event', this.onBackendSucceeded)
@@ -172,7 +162,6 @@ export class JourneyStarter extends LitElement {
         if (changedProperties.has("journeyTypeId") && changedProperties.get("journeyTypeId")) {
             const journeyId = nanoid()
             const journeyTypeId = changedProperties.get("journeyTypeId") as string;
-            console.log('journeyTypeId updates to ', journeyTypeId)
             await new MateuApiClient(this.baseUrl).createJourney(journeyTypeId, journeyId)
             this.journey = await new MateuApiClient(this.baseUrl).fetchJourney(journeyTypeId, journeyId)
             this.stepId = this.journey.currentStepId
@@ -186,7 +175,6 @@ export class JourneyStarter extends LitElement {
         // @ts-ignore
         this.journeyTypeId = (event.target as HTMLElement).getAttribute('typeId');
         this.journeyId = nanoid()
-        console.log('start journey event received', this.journeyTypeId)
         await new MateuApiClient(this.baseUrl).createJourney(this.journeyTypeId!, this.journeyId)
         this.journey = await new MateuApiClient(this.baseUrl).fetchJourney(this.journeyTypeId!, this.journeyId)
         this.stepId = this.journey.currentStepId
@@ -203,7 +191,6 @@ export class JourneyStarter extends LitElement {
     onActionCalled = async () => {
         this.journey = await new MateuApiClient(this.baseUrl).fetchJourney(this.journeyTypeId!, this.journeyId!)
         this.stepId = this.journey.currentStepId
-        console.log('onactioncalled', this.stepId)
         this.step = await new MateuApiClient(this.baseUrl).fetchStep(this.journeyTypeId!, this.journeyId!, this.stepId)
         this.previousStepId = this.step.previousStepId
     }

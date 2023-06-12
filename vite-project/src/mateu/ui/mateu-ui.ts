@@ -59,13 +59,11 @@ export class MateuUi extends LitElement {
         this.ui = await new MateuApiClient(this.baseUrl).fetchUi(this.uiId);
         this.items = this.ui?.menu?.map(m => this.mapToMenuBarItem(m));
         if (window.location.hash) {
-            console.log('when connected hash was', window.location.hash)
             if (!window.location.hash.startsWith('#state=')) {
                 this.journeyTypeId = window.location.hash.split('&')[0].substring(1)
             }
         }
         window.onpopstate = (e) => {
-            console.log('popped', e);
             const w = e.target as Window
             if (!w.location.hash.startsWith('#state=')) {
                 this.journeyTypeId = w.location.hash.split('&')[0].substring(1)
@@ -83,7 +81,6 @@ export class MateuUi extends LitElement {
 
     itemSelected(event: MenuBarItemSelectedEvent) {
         let item = event.detail.value as MyMenuBarItem
-        console.log('itemselected', item)
         new MateuApiClient('').abortAll();
         this.journeyTypeId = undefined;
         setTimeout(() => {

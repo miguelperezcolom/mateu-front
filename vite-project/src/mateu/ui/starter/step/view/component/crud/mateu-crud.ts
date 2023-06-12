@@ -413,7 +413,6 @@ export class MateuCrud extends LitElement {
 
   exportItemSelected(event: MenuBarItemSelectedEvent) {
     let item = event.detail.value
-    console.log('itemselected', item)
     if (item.text == 'Excel') {
       new MateuApiClient(this.baseUrl).getXls(this.journeyTypeId, this.journeyId, this.stepId, this.listId, this.lastSortOrders!, this.lastFilters!)
     } else if (item.text == 'Csv') {
@@ -422,7 +421,6 @@ export class MateuCrud extends LitElement {
   }
 
   pageChanged(e: CustomEvent) {
-    console.log('pageChanged', e.detail.page)
     const grid = this.shadowRoot!.getElementById('grid') as Grid;
     this.page = e.detail.page;
     grid.clearCache();

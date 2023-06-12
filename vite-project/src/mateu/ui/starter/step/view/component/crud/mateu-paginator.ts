@@ -85,7 +85,6 @@ export class MateuPaginator extends LitElement {
 
   clickOnPage(event: Event) {
     const page = (event.target as HTMLElement).getAttribute('page');
-    console.log('clickonpage', page)
     this.dispatchEvent(new CustomEvent('page-changed', {
       bubbles: true,
       composed: true,

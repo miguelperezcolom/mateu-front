@@ -36,7 +36,6 @@ export default class MateuApiClient {
             }
         }))
         return call.then(response => {
-            console.log(response)
             dispatchEvent(new CustomEvent('backend-succeeded-event', {
                 bubbles: true,
                 composed: true,

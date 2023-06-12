@@ -39,7 +39,6 @@ export class FieldClosedList extends LitElement implements Component {
         console.log(event)
     }
     setValue(value: unknown): void {
-        console.log('setvalue', value)
         if (!value) {
             this.value = undefined
             return
@@ -69,7 +68,6 @@ export class FieldClosedList extends LitElement implements Component {
     @property()
     onChange = (e:CheckboxGroupValueChangedEvent) => {
         if (this.value != e.detail.value) {
-            console.log('value change', this.value, e.detail.value)
             this.onValueChanged({fieldId: this.field!.id,
                 value: e.detail.value})
         }
