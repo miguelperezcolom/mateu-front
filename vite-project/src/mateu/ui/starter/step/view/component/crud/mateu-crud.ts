@@ -285,6 +285,7 @@ export class MateuCrud extends LitElement {
       console.log('Attribute actionId is missing for ' + button)
       return
     }
+
     const action = this.findAction(actionId!)
     if (!action) {
       console.log('No action with id ' + actionId)
