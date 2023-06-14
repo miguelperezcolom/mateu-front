@@ -177,7 +177,8 @@ export class MateuCrud extends LitElement {
   }
 
   search() {
-    if (this.searchSignature == this.journeyId + '-' + this.stepId + '-' + this.listId) {
+    console.log('signature', this.searchSignature, this.journeyId + '-' + this.stepId + '-' + this.listId)
+    if (this.searchSignature != this.journeyId + '-' + this.stepId + '-' + this.listId) {
       const grid = this.shadowRoot!.getElementById('grid') as Grid;
       this.page = 0;
       grid.clearCache();

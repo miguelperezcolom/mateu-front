@@ -58,6 +58,9 @@ export class MateuView extends LitElement {
             bubbles: true,
             composed: true,
             detail: {
+                journeyTypeId: this.journeyTypeId,
+                journeyId: this.journeyId,
+                stepId: this.stepId,
                 __index: this.step.data.__index! + 1,
                 __count: this.step.data.__count,
                 previousStepId: this.previousStepId
@@ -69,6 +72,9 @@ export class MateuView extends LitElement {
             bubbles: true,
             composed: true,
             detail: {
+                journeyTypeId: this.journeyTypeId,
+                journeyId: this.journeyId,
+                stepId: this.stepId,
                 __index: this.step.data.__index! - 1,
                 __count: this.step.data.__count,
                 previousStepId: this.previousStepId

@@ -119,9 +119,9 @@ export class JourneyStarter extends LitElement {
         }
         console.log('data', data, ce.detail)
         await new MateuApiClient(this.baseUrl)
-            .runStepAction(this.journeyTypeId!, this.journeyId!, ce.detail.previousStepId, '__list__main__edit', data)
+            .runStepAction(ce.detail.journeyTypeId!, ce.detail.journeyId!, ce.detail.previousStepId, '__list__main__edit', data)
         this.step = await new MateuApiClient(this.baseUrl)
-            .fetchStep(this.journeyTypeId!, this.journeyId!, this.stepId!)
+            .fetchStep(ce.detail.journeyTypeId!, ce.detail.journeyId!, ce.detail.stepId!)
     }
 
     onPreviousRequested = async (event: Event) => {
@@ -131,9 +131,9 @@ export class JourneyStarter extends LitElement {
             __count: ce.detail.__count,
         }
         await new MateuApiClient(this.baseUrl)
-            .runStepAction(this.journeyTypeId!, this.journeyId!, ce.detail.previousStepId, '__list__main__edit', data)
+            .runStepAction(ce.detail.journeyTypeId!, ce.detail.journeyId!, ce.detail.previousStepId, '__list__main__edit', data)
         this.step = await new MateuApiClient(this.baseUrl)
-            .fetchStep(this.journeyTypeId!, this.journeyId!, this.stepId!)
+            .fetchStep(ce.detail.journeyTypeId!, ce.detail.journeyId!, ce.detail.stepId!)
     }
 
     async connectedCallback() {

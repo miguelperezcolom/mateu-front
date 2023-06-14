@@ -82,6 +82,7 @@ export class FieldBoolean extends LitElement implements Component {
                            name="${this.name}" 
                            id="${this.name}"
                            value=${this.value}
+                                 ?checked=${this.value}
                    ?disabled=${!this.enabled}
                                  ?required=${this.required}
                                  placeholder="${this.placeholder}"
