@@ -20,6 +20,7 @@ export const mapInputTypeToFieldType =  (type: string, stereotype: string):strin
         case 'closedlist': return 'field-closedlist';
         case 'externalref-closedlist': return 'field-externalref-checkboxes';
         case 'rawcontent': return 'field-rawcontent';
+        case 'crud': return 'field-crud';
     }
     switch (type) {
         case 'telephone': return 'field-telephone';

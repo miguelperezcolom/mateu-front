@@ -32,6 +32,7 @@ import './fields/field-boolean-radio-buttons'
 import './fields/field-stepper'
 import './fields/field-telephone'
 import './fields/field-complexkeychoice'
+import './fields/field-crud'
 import FieldWrapper from "../../../FieldWrapper";
 
 /**

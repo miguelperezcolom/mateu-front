@@ -211,16 +211,24 @@ export class MateuForm extends LitElement implements FormElement {
     setTimeout(() => this.runRules());
   }
 
+  editFieldListener = async (event: Event) => {
+    const customEvent = event as CustomEvent
+    const fieldId = customEvent.detail.fieldId;
+    await new MateuApiClient(this.baseUrl).runStepAction(this.journeyTypeId, this.journeyId, this.stepId,
+        '__editfield__' + fieldId, this.data)
+  }
+
   connectedCallback() {
     super.connectedCallback();
     this.setUp()
-    addEventListener('edit-field', async (event: Event) => {
-      const customEvent = event as CustomEvent
-      const fieldId = customEvent.detail.fieldId;
-      await new MateuApiClient(this.baseUrl).runStepAction(this.journeyTypeId, this.journeyId, this.stepId,
-          '__editfield__' + fieldId, this.data)
-    })
+    this.addEventListener('edit-field', this.editFieldListener)
   }
+
+  disconnectedCallback() {
+    this.removeEventListener('edit-field', this.editFieldListener)
+    super.disconnectedCallback();
+  }
+
 
   async runAction(event: Event) {
     const actionId = (event.target as HTMLElement).getAttribute('actionId');

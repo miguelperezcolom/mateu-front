@@ -229,6 +229,11 @@ export class MateuCrud extends LitElement {
     this.setUp()
   }
 
+  disconnectedCallback() {
+    this.removeEventListener('keydown', this.handleKey)
+    super.disconnectedCallback();
+  }
+
   setUp() {
 
   }

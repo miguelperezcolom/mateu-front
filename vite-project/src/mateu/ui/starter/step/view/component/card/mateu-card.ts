@@ -5,7 +5,6 @@ import '@vaadin/vaadin-notification'
 import '@vaadin/button'
 import '@vaadin/dialog'
 import Field from "../../../../../../api/dtos/Field";
-import MateuApiClient from "../../../../../../api/MateuApiClient";
 import FieldWrapper from "../form/FieldWrapper";
 import FieldsMap from "../form/FieldsMap";
 import Card from "../../../../../../api/dtos/Card";
@@ -75,12 +74,6 @@ export class MateuCard extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.setUp()
-    addEventListener('edit-field', async (event: Event) => {
-      const customEvent = event as CustomEvent
-      const fieldId = customEvent.detail.fieldId;
-      await new MateuApiClient(this.baseUrl).runStepAction(this.journeyTypeId, this.journeyId, this.stepId,
-          '__editfield__' + fieldId, this.data)
-    })
   }
 
   getPaintableValue(field: Field, value: unknown) {

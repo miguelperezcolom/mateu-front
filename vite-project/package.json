@@ -1,11 +1,11 @@
 {
   "name": "mateu-ui",
   "private": false,
-  "version": "1.0.46",
+  "version": "1.0.48",
   "type": "module",
-  "main": "dist/assets/index.js",
+  "main": "dist/assets/mateu.js",
   "exports": {
-    ".": "./dist/assets/index.js"
+    ".": "./dist/assets/mateu.js"
   },
   "types": "types/mateu-ui.d.ts",
   "files": [
@@ -28,6 +28,7 @@
     "@vaadin/date-picker": "^23.3.8",
     "@vaadin/date-time-picker": "^23.3.8",
     "@vaadin/dialog": "^23.3.8",
+    "@vaadin/form": "^0.0.17",
     "@vaadin/form-layout": "^23.2.1",
     "@vaadin/horizontal-layout": "^23.2.1",
     "@vaadin/integer-field": "^23.3.8",
