@@ -102,6 +102,10 @@ export class FieldCrud extends LitElement implements Component {
             this.value = this.value?.filter(obj => obj !== this.selectedItems[0]);
         }
         this.selectedItems = []
+        this.onValueChanged({
+            fieldId: this.field!.id,
+            value: this.value
+        })
     }
 
     private renderDialog = () => html`
@@ -184,6 +188,10 @@ export class FieldCrud extends LitElement implements Component {
             // @ts-ignore
             this.value = [].concat(this.value, this.selectedItem)
         }
+        this.onValueChanged({
+            fieldId: this.field!.id,
+            value: this.value
+        })
         this.close()
     }
 
