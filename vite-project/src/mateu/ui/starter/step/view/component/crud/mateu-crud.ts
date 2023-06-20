@@ -179,10 +179,14 @@ export class MateuCrud extends LitElement {
   search() {
     console.log('signature', this.searchSignature, this.journeyId + '-' + this.stepId + '-' + this.listId)
     if (this.searchSignature != this.journeyId + '-' + this.stepId + '-' + this.listId) {
-      const grid = this.shadowRoot!.getElementById('grid') as Grid;
-      this.page = 0;
-      grid.clearCache();
+      this.doSearch();
     }
+  }
+
+  doSearch() {
+    const grid = this.shadowRoot!.getElementById('grid') as Grid;
+    this.page = 0;
+    grid.clearCache();
   }
 
   async fetchData(params: {
@@ -244,7 +248,7 @@ export class MateuCrud extends LitElement {
 
   private handleKey(e: KeyboardEvent) {
     if (e.code == 'Enter') {
-      setTimeout(() => this.search());
+      setTimeout(() => this.doSearch());
     }
   }
 
@@ -429,7 +433,7 @@ export class MateuCrud extends LitElement {
                              placeholder="${f.placeholder}"
                              style="flex-grow: 1;"></vaadin-text-field>
         `)}
-        <vaadin-button theme="primary" @click="${this.search}">Search</vaadin-button>
+        <vaadin-button theme="primary" @click="${this.doSearch}">Search</vaadin-button>
       </vaadin-horizontal-layout>
 
       <vaadin-horizontal-layout style="align-items: baseline;" theme="spacing">
