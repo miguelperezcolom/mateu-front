@@ -22,7 +22,7 @@ import ConfirmationTexts from "../../../../../../api/dtos/ConfirmationTexts";
 import { dialogRenderer } from 'lit-vaadin-helpers';
 import { dialogFooterRenderer } from '@vaadin/dialog/lit';
 import {MenuBarItemSelectedEvent} from "@vaadin/menu-bar";
-
+import {mapField} from "./crudFieldMapping";
 
 /**
  * An example element.
@@ -261,7 +261,9 @@ export class MateuCrud extends LitElement {
     const input = e.currentTarget as HTMLInputElement;
     const obj = {};
     // @ts-ignore
-    obj[input.id] = input.value || null;
+    const newValue = e.detail.value? e.detail.value : input.value;
+    // @ts-ignore
+    obj[input.id] = newValue || null;
     this.data = { ...this.data, ...obj}
   }
 
@@ -437,61 +439,7 @@ export class MateuCrud extends LitElement {
       </vaadin-horizontal-layout>
 
       <vaadin-horizontal-layout style="align-items: baseline;" theme="spacing">
-        ${this.metadata?.searchForm.fields.slice(1).map(f => html`
-          ${f.type != 'enum'
-              && f.type != 'boolean'
-              && f.type != 'DatesRange'
-              && f.type != 'ExternalReference'?html`
-            <vaadin-text-field id="${f.id}" label="${f.caption}"
-                               placeholder="${f.placeholder}"
-                               @change=${this.filterChanged}
-            ></vaadin-text-field>
-          `:''}
-          ${f.type == 'boolean'?html`
-            <vaadin-checkbox-group id="${f.id}" label="${f.caption}"
-                               placeholder="${f.placeholder}"
-                               @change=${this.filterChanged}>
-              <vaadin-checkbox></vaadin-checkbox>
-            </vaadin-checkbox-group>
-          `:''}
-          ${f.type == 'DatesRange'?html`
-            <vaadin-date-picker id="${f.id}_from" label="${f.caption} from"
-                               placeholder="${f.placeholder}"
-                               @change=${this.filterChanged}></vaadin-date-picker>
-            <vaadin-date-picker id="${f.id}_to" label="${f.caption} to"
-                                placeholder="${f.placeholder}"
-                                @change=${this.filterChanged}></vaadin-date-picker>
-          `:''}
-          ${f.type == 'enum'?html`
-            
-            <vaadin-combo-box label="${f.caption}" theme="vertical"
-                                @change=${this.filterChanged}
-                           id="${f.id}"
-                              .items="${f.attributes.filter(a => a.key == 'choice').map(a => a.value)}"
-                              item-label-path="key"
-                              item-value-path="value"
-                              placeholder="${f.placeholder}"
-            >
-            </vaadin-combo-box>
-            
-            
-          `:''}
-          ${f.type == 'ExternalReference'?html`
-            
-            <field-externalref label="${f.caption}" theme="vertical"
-                           id="${f.id}"
-                               ._attributes="${f.attributes}"
-                               baseUrl="${this.baseUrl}"
-                               @filterchanged=${this.valueChanged}
-                              item-label-path="key"
-                              item-value-path="value"
-                              placeholder="${f.placeholder}"
-            >
-            </field-externalref>
-            
-            
-          `:''}
-        `)}
+        ${this.metadata?.searchForm.fields.slice(1).map(f => mapField(f, this.filterChanged, this.baseUrl))}
       </vaadin-horizontal-layout>
       <vaadin-grid id="grid" .dataProvider="${this.dataProvider}" all-rows-visible>
         <vaadin-grid-selection-column></vaadin-grid-selection-column>

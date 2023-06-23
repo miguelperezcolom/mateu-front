@@ -37,6 +37,11 @@ export class FieldReadonly extends LitElement implements Component {
     }
     setValue(value: unknown): void {
         this.value = value;
+        if (this.field?.type == 'ExternalReference') {
+            // @ts-ignore
+            this.rawValue = this.value.key;
+            return
+        }
         if (this.field?.type == 'ExternalReference[]') {
             const values = value as Value[]
             this.rawValue = values.map(v => v.key).join(', ');
@@ -96,7 +101,7 @@ export class FieldReadonly extends LitElement implements Component {
                    ?disabled=${!this.enabled}
                 ?required=${this.required}
                 readonly
-            ><div class="content" slot="textarea">${this.value}</div></vaadin-text-area>
+            ><div class="content" slot="textarea">${this.rawValue}</div></vaadin-text-area>
             `
     }
 

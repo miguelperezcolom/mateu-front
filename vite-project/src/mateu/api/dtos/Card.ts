@@ -9,6 +9,12 @@ export default interface Card extends ViewMetadata {
 
     subtitle: string;
 
+    icon: string;
+
+    info: string;
+
+    total: string;
+
     fieldGroups: FieldGroup[];
 
 }

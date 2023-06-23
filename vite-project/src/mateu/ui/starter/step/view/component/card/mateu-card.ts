@@ -95,10 +95,12 @@ export class MateuCard extends LitElement {
       <div class="card">
         
         <vaadin-horizontal-layout class="header">
+          ${this.metadata.icon?html`<vaadin-icon icon="vaadin:${this.metadata.icon}"></vaadin-icon>`:''}
           <div>
             <h4>${this.metadata.title}</h4>
             <h6>${this.metadata.subtitle}</h6>
           </div>
+          <div>${this.metadata.info}</div>
         </vaadin-horizontal-layout>
 
         ${this.metadata.fieldGroups.map(g => html`
@@ -106,9 +108,14 @@ export class MateuCard extends LitElement {
               <div class="table">
               ${g.lines.flatMap(l => l.fields).map(f => html`<div class="field"><div class="cell caption">${f.caption}</div>
                   <div class="cell value">${this.getPaintableValue(f, this.getValue(f.id))}</div></div>`)}
+
+                ${this.metadata.total?html`
+                  <div class="field total"><div class="cell caption">Total</div>
+                    <div class="cell value">${this.metadata.total}</div></div>
+        `:''}
+
               </div>
           </div>`)}
-        
       </div>
     `
   }
@@ -132,6 +139,16 @@ export class MateuCard extends LitElement {
         border-bottom: 1px dashed lightgrey;
         display: flex;
     }
+    
+    .field.total {
+      border-bottom: inherit;
+    }
+
+    .field.total .cell {
+        font-weight: bold;
+        font-size: 1.25rem;
+    }
+
     
     .cell {
         min-height: 1rem;

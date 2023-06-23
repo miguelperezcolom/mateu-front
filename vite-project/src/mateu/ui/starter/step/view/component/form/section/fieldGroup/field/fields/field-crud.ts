@@ -13,7 +13,7 @@ import {DialogOpenedChangedEvent} from "@vaadin/dialog";
 import {dialogFooterRenderer, dialogRenderer} from "@vaadin/dialog/lit";
 import {Button} from "@vaadin/button";
 import ValueChangedEvent from "./interfaces/ValueChangedEvent";
-import {TextField} from "@vaadin/vaadin-text-field";
+import Column from "../../../../../../../../../../api/dtos/Column";
 
 
 @customElement('field-crud')
@@ -108,22 +108,94 @@ export class FieldCrud extends LitElement implements Component {
         })
     }
 
+    mapField = (f: Column, filterChanged: Function, baseUrl: string) => html`
+          ${f.type != 'enum'
+    && f.type != 'boolean'
+          && f.type != 'int'
+    && f.type != 'DatesRange'
+    && f.type != 'ExternalReference'?html`
+            <vaadin-text-field id="${f.id}" label="${f.caption}"
+                               placeholder="${f.placeholder}"
+                               value="${this.getFieldValue(f.id)}"
+                               ?readonly="${f.readOnly}"
+                               @value-changed="${filterChanged}"
+            ></vaadin-text-field>
+          `:''}
+          ${f.type == 'int'?html`
+              <vaadin-integer-field id="${f.id}" label="${f.caption}"
+                                 placeholder="${f.placeholder}"
+                                 value="${this.getFieldValue(f.id)}"
+                                 ?readonly="${f.readOnly}"
+                                 @value-changed="${filterChanged}"
+              ></vaadin-integer-field>
+          `:''}
+          ${f.type == 'boolean'?html`
+            <vaadin-checkbox-group
+            ><vaadin-checkbox label="Yes"
+                              id="${f.id}" label="${f.caption}"
+                              placeholder="${f.placeholder}"
+                              value="${this.getFieldValue(f.id)}"
+                              @change=${filterChanged}
+                              ?checked=${this.getFieldValue(f.id)}
+                   ?disabled=${!this.enabled}
+                                 ?required=${this.required}
+                                 placeholder="${this.placeholder}"></vaadin-checkbox>
+            </vaadin-checkbox-group>
+          `:''}
+          ${f.type == 'date'?html`
+            <vaadin-date-picker id="${f.id}" label="${f.caption}" 
+                               value="${this.getFieldValue(f.id)}"
+                               placeholder="${f.placeholder}"
+                               @change=${filterChanged}></vaadin-date-picker>
+          `:''}
+          ${f.type == 'enum'?html`
+            
+            <vaadin-combo-box label="${f.caption}" theme="vertical"
+                                @change=${filterChanged}
+                              value="${this.getFieldValue(f.id)}"
+                           id="${f.id}"
+                              .items="${f.attributes.filter(a => a.key == 'choice').map(a => a.value)}"
+                              item-label-path="key"
+                              item-value-path="value"
+                              placeholder="${f.placeholder}"
+            >
+            </vaadin-combo-box>
+            
+            
+          `:''}
+          ${f.type == 'ExternalReference'?html`
+            
+            <field-externalref label="${f.caption}" theme="vertical"
+                           id="${f.id}"
+                               ._attributes="${f.attributes}"
+                               value="${this.getFieldValue(f.id)}"
+                               baseUrl="${baseUrl}"
+                               @filterchanged=${filterChanged}
+                              item-label-path="key"
+                              item-value-path="value"
+                              placeholder="${f.placeholder}"
+            >
+            </field-externalref>
+            
+            
+          `:''}
+        `;
+
     private renderDialog = () => html`
     <vaadin-vertical-layout style="align-items: stretch; width: 18rem; max-width: 100%;">
-        ${this.field?.attributes.filter(a => a.key == 'column').map(a => a.value as {id:string, caption:string})
-                .map(c => html`
-                        <vaadin-text-field id="${c.id}"
-                                           label="${c.caption}"
-                                           value="${this.getFieldValue(c.id)}"
-                                           @value-changed="${(e:CustomEvent) => {
-                            this.setFieldValue(c.id, e.detail.value)
-                        }}"></vaadin-text-field>
-                    `)}
+        ${this.field?.attributes.filter(a => a.key == 'column').map(a => a.value as Column)
+                .map(c => this.mapField(c, (e:CustomEvent) => {
+                            if (e.detail) {
+                                this.setFieldValue(c.id, e.detail.value)
+                            } else {
+                                // @ts-ignore
+                                this.setFieldValue(c.id, e.target.checked);
+                            }
+                        }, this.baseUrl))}
     </vaadin-vertical-layout>
   `;
 
     private getFieldValue(fieldId: string) {
-        console.log('getvalue')
         // @ts-ignore
         return this.selectedItem[fieldId]
     }
@@ -142,12 +214,18 @@ export class FieldCrud extends LitElement implements Component {
 
     private updateForm() {
         setTimeout(() => {
-            this.field?.attributes.filter(a => a.key == 'column').map(a => a.value as {id:string, caption:string})
+            this.field?.attributes.filter(a => a.key == 'column').map(a => a.value as {id:string, caption:string, type: string})
                 .forEach(c => {
                     // @ts-ignore
                     if (document.getElementById(c.id)) {
-                        const f = document.getElementById(c.id) as TextField
-                        f.value = this.getFieldValue(c.id)
+                        const f = document.getElementById(c.id)
+                        if (c.type == 'boolean') {
+                            // @ts-ignore
+                            f.checked = this.getFieldValue(c.id)
+                        } else {
+                            // @ts-ignore
+                            f.value = this.getFieldValue(c.id)
+                        }
                     }
                 })
             if (this.selectedIndex <= 0) {
