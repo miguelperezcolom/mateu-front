@@ -259,9 +259,18 @@ export class MateuCrud extends LitElement {
 
   filterChanged(e:Event) {
     const input = e.currentTarget as HTMLInputElement;
+    console.log('input', input)
     const obj = {};
     // @ts-ignore
-    const newValue = e.detail.value? e.detail.value : input.value;
+    console.log('e', e)
+    let newValue = null;
+    // @ts-ignore
+    if (e.detail && e.detail.value) {
+      // @ts-ignore
+      newValue = e.detail.value;
+    } else {
+      newValue = input.value;
+    }
     // @ts-ignore
     obj[input.id] = newValue || null;
     this.data = { ...this.data, ...obj}
