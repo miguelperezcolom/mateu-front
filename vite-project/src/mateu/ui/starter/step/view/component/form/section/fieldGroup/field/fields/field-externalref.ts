@@ -23,6 +23,9 @@ export class FieldExternalRef extends LitElement implements Component {
         this.placeholder = placeholder
     }
 
+    setPattern(): void {
+    }
+
     setField(field: Field): void {
         this.field = field;
         this._attributes = field.attributes;

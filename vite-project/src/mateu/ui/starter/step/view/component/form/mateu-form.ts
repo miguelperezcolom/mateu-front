@@ -246,9 +246,9 @@ export class MateuForm extends LitElement implements FormElement {
           .flatMap(s => s.fieldGroups
           .flatMap(g => g.lines)
           .flatMap(g => g.fields))
-          .filter(f => f.validations?.length > 0);
+          .filter(f => f.validations.filter(v => 'NotEmpty' == v.type).length > 0);
       // @ts-ignore
-      const missingFields = requiredFields.filter(f => !this.data[f.id]);
+      const missingFields = requiredFields.filter(f => this.isEmpty(f));
       if (missingFields.length > 0) {
         const fnames = missingFields.map(f => f.caption);
         this.notificationMessage = 'All mandatory fields must be filled (' + fnames + ')';
@@ -266,6 +266,11 @@ export class MateuForm extends LitElement implements FormElement {
     } else {
       await new MateuApiClient(this.baseUrl).runStepAction(this.journeyTypeId, this.journeyId, this.stepId, actionId!, this.data)
     }
+  }
+
+  private isEmpty(f: Field):boolean {
+    //@ts-ignore
+    return !this.data[f.id] || (f.type == 'telephone' && (!this.data[f.id].prefix || !this.data[f.id].number))
   }
 
   private findAction(actionId: string) {

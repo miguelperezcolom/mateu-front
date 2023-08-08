@@ -28,6 +28,9 @@ export class FieldReadonly extends LitElement implements Component {
     setPlaceholder(): void {
     }
 
+    setPattern(): void {
+    }
+
     setEnabled(enabled: boolean): void {
         this.enabled = enabled;
     }

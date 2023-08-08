@@ -28,6 +28,10 @@ export class FieldText extends LitElement implements Component {
         this.placeholder = placeholder
     }
 
+    setPattern(pattern: string): void {
+        this.pattern = pattern
+    }
+
     setEnabled(enabled: boolean): void {
         this.enabled = enabled;
     }
@@ -52,6 +56,9 @@ export class FieldText extends LitElement implements Component {
 
     @property()
     placeholder = '';
+
+    @property()
+    pattern = '';
 
     @property()
     name = '';
@@ -85,6 +92,8 @@ export class FieldText extends LitElement implements Component {
                    ?disabled=${!this.enabled}
                 ?required=${this.required}
                 placeholder="${this.placeholder}"
+                allowed-char-pattern="${this.pattern}"
+                pattern="${this.pattern}"
             ></vaadin-text-field>
             `
     }

@@ -28,6 +28,9 @@ export class FieldBooleanArray extends LitElement implements Component {
         if (placeholder) this.placeholder = placeholder
     }
 
+    setPattern(): void {
+    }
+
     setEnabled(enabled: boolean): void {
         this.enabled = enabled;
     }

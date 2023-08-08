@@ -86,7 +86,11 @@ export class MateuField extends LitElement {
       this.component.setField(this.field);
       this.component.setValue(this.value)
       this.component.setBaseUrl(this.baseUrl)
-      this.component.setRequired(this.field.validations.length > 0)
+      this.component.setRequired(this.field.validations
+          .filter(v => 'NotEmpty' == v.type).length > 0)
+      this.field.validations.filter(v => 'Pattern' == v.type)
+          .forEach(v => this.component?.setPattern(v.data))
+
     }
   }
 

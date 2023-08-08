@@ -34,6 +34,9 @@ export class FieldTelephone extends LitElement implements Component {
         this.placeholder = placeholder
     }
 
+    setPattern(): void {
+    }
+
     setEnabled(enabled: boolean): void {
         this.enabled = enabled;
     }
@@ -108,6 +111,7 @@ export class FieldTelephone extends LitElement implements Component {
                 <vaadin-select
                         value="${this.telprefix}"
                         @value-changed=${this.onPrefixChange}
+                        ?required=${this.required}
                         ${selectRenderer(
                                 () => html`
             <vaadin-list-box>
@@ -142,6 +146,8 @@ export class FieldTelephone extends LitElement implements Component {
                    ?disabled=${!this.enabled}
                 ?required=${this.required}
                 placeholder="${this.placeholder}"
+                allowed-char-pattern="[0-9]*"
+                pattern="[0-9]*"
             ></vaadin-text-field>
             </vaadin-custom-field>
             `

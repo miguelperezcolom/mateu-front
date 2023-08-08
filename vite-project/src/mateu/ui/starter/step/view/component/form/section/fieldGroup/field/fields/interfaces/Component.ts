@@ -11,6 +11,8 @@ export default interface Component {
 
     setPlaceholder(value: string): void;
 
+    setPattern(value: string): void;
+
     setValue(value: unknown): void;
 
     setEnabled(enabled: boolean): void;

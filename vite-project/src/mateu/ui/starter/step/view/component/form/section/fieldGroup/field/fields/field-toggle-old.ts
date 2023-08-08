@@ -29,6 +29,9 @@ export class FieldToggleOld extends LitElement implements Component {
         this.placeholder = placeholder
     }
 
+    setPattern(): void {
+    }
+
     setEnabled(enabled: boolean): void {
         this.enabled = enabled;
     }
