@@ -1,4 +1,4 @@
-import {customElement, property} from "lit/decorators.js";
+import {customElement, property, state} from "lit/decorators.js";
 import {html, css, LitElement} from "lit";
 import Component from "./interfaces/Component";
 import ValueChangedEvent from "./interfaces/ValueChangedEvent";
@@ -7,6 +7,7 @@ import Field from "../../../../../../../../../../api/dtos/Field";
 import File from "../../../../../../../../../../api/dtos/File";
 import {nanoid} from "nanoid";
 import {UploadElement} from "@vaadin/vaadin-upload/src/vaadin-upload";
+import {UploadFile} from "@vaadin/vaadin-upload";
 
 
 @customElement('field-file')
@@ -46,12 +47,23 @@ export class FieldFile extends LitElement implements Component {
         console.log(event)
     }
     setValue(value: unknown): void {
-        console.log('value', value)
         if (!value) {
             this.value = [];
             return
         }
-        this.value = [value as File];
+        if (Array.isArray(value)) {
+            this.value = value as File[];
+        } else {
+            this.value = [value as File];
+        }
+        this.files = this.value.map(f => {
+            return {
+                name: f.name,
+                type: f.type,
+                uploadTarget: f.targetUrl,
+            } as UploadFile
+        })
+        console.log('files', this.files)
     }
 
     setBaseUrl(value: string): void {
@@ -74,21 +86,43 @@ export class FieldFile extends LitElement implements Component {
     @property()
     onChange = (e:CustomEvent) => {
         const input = e.target as UploadElement;
-        if (e.detail.value == 100) {
-            console.log('upload complete', e, input.files)
+        if (e.type == 'files-changed') {
             this.onValueChanged({
                 fieldId: this.field!.id,
-                value: input.files.map(uf => { return {
+                value: input.files.filter(uf => !uf.abort).map(uf => { return {
                     targetUrl: uf.uploadTarget,
-                    id: this.fileid,
+                    id: this.getFileId(uf.uploadTarget),
+                    name: uf.name,
+                    type: uf.type
+                } as File })})
+        }
+        if (e.detail.value == 100) {
+            console.log('upload complete', e, input.files)
+            //input.target = `${this.baseUrl + '/files/' + this.fileidprefix + nanoid()}`
+            this.onValueChanged({
+                fieldId: this.field!.id,
+                value: input.files.filter(uf => !uf.abort).map(uf => { return {
+                    targetUrl: uf.uploadTarget,
+                    id: this.getFileId(uf.uploadTarget),
                     name: uf.name,
                     type: uf.type
                 } as File })})
         }
     }
 
+    getFileId(uploadTarget: string) {
+        if (!uploadTarget) {
+            return undefined
+        }
+        const tokens = uploadTarget.split('/');
+        return tokens[tokens.length - 1].replace('mateuremoteistheremoteflavourofmateu', '')
+    }
+
     @property()
     value: File[] = [];
+
+    @state()
+    files: UploadFile[] = [];
 
     @property()
     enabled = true;
@@ -119,7 +153,7 @@ export class FieldFile extends LitElement implements Component {
                 @files-changed=${this.onChange}
                            name="${this.name}" 
                            id="${this.name}"
-                           .files=${this.value}
+                           .files=${this.files}
                    ?disabled=${!this.enabled}
                 ?required=${this.required}
                 placeholder="${this.placeholder}"
