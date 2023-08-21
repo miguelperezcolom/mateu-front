@@ -61,6 +61,7 @@ export class MateuSection extends LitElement {
   }
 
     onValueChange(e: CustomEvent) {
+      console.log('onValueChange', e);
         this.formElement.valueChanged(e.detail.key, e.detail.value)
     }
 
@@ -81,6 +82,8 @@ export class MateuSection extends LitElement {
                   <mateu-field .field="${f}"  class="fullWidth"
                                                   @change=${this.onValueChange}
                                                     baseUrl=${this.baseUrl}
+                                                    name="${f.id}"
+                                                    id="${f.id}"
                                                     .formElement=${this.formElement} 
                                                     .value=${this.formElement.getValue(f.id)} 
                                                     .fieldWrapper=${this.formElement.getFieldWrapper(f)}

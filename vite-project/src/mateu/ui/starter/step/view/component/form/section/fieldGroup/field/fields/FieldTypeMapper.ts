@@ -10,6 +10,9 @@ export const mapInputTypeToFieldType =  (type: string, stereotype: string):strin
     if (type == 'boolean' && stereotype == 'radiobuttons') {
         return 'field-boolean-radio-buttons';
     }
+    if ((type == 'string[]' || type == 'int[]') && stereotype == 'combobox') {
+        return 'field-multi-select-combobox';
+    }
     switch (stereotype) {
         case 'readonly': return 'field-readonly';
         case 'textarea': return 'field-textarea';

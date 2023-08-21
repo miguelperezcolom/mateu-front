@@ -55,6 +55,8 @@ export class MateuFieldGroup extends LitElement {
             ${l.fields.map(s => html`<mateu-field .field="${s}" 
                                                   @change=${this.onValueChange}
                                                     baseUrl=${this.baseUrl}
+                                                    id="${s.id}"
+                                                  name="${s.id}"
                                                     .formElement=${this.formElement} 
                                                     .value=${this.formElement.getValue(s.id)} 
                                                     .fieldWrapper=${this.formElement.getFieldWrapper(s)}

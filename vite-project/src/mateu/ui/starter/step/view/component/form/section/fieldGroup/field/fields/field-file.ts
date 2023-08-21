@@ -61,9 +61,9 @@ export class FieldFile extends LitElement implements Component {
                 name: f.name,
                 type: f.type,
                 uploadTarget: f.targetUrl,
+                complete: true
             } as UploadFile
         })
-        console.log('files', this.files)
     }
 
     setBaseUrl(value: string): void {

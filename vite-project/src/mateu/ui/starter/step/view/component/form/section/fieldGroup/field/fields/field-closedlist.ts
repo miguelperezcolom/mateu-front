@@ -48,7 +48,8 @@ export class FieldClosedList extends LitElement implements Component {
         }
         const raw = value as [];
         // @ts-ignore
-        this.value = raw.map(v => '' + v.value?v.value:v);
+        this.value = raw.map(v => v.value?v.value:v);
+        console.log('value', value, this.value)
     }
 
     setBaseUrl(value: string): void {

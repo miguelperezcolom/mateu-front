@@ -33,6 +33,7 @@ import './fields/field-stepper'
 import './fields/field-telephone'
 import './fields/field-complexkeychoice'
 import './fields/field-crud'
+import './fields/field-multi-select-combobox'
 import FieldWrapper from "../../../FieldWrapper";
 
 /**
@@ -110,7 +111,8 @@ export class MateuField extends LitElement {
 
   paint() {
     const element = document.createElement(mapInputTypeToFieldType(this.field.type, this.field.stereotype));
-    element.setAttribute('id', 'field')
+    element.setAttribute('id', this.field.id)
+    element.setAttribute('name', this.field.id)
     const container = this.shadowRoot!.getElementById('container')!;
     if (this.field.stereotype.startsWith('element:')) {
       this.element = element;
