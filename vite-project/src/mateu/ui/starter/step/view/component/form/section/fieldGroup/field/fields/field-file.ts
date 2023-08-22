@@ -56,6 +56,7 @@ export class FieldFile extends LitElement implements Component {
         } else {
             this.value = [value as File];
         }
+        // @ts-ignore
         this.files = this.value.map(f => {
             return {
                 name: f.name,
@@ -87,27 +88,35 @@ export class FieldFile extends LitElement implements Component {
     onChange = (e:CustomEvent) => {
         const input = e.target as UploadElement;
         if (e.type == 'files-changed') {
+            this.checkAndSendNotifyChanged(input)
+        }
+        if (e.type == 'upload-success') {
+            this.checkAndSendNotifyChanged(input)
+        }
+    }
+
+    private checkAndSendNotifyChanged(input: UploadElement) {
+        console.log('files', input.files);
+        const newFileList = input.files.filter(uf => !uf.abort).map(uf => { return {
+            targetUrl: uf.uploadTarget,
+            id: this.getFileId(uf.uploadTarget),
+            name: uf.name,
+            type: uf.type
+        } as File })
+        if (!this.areEqual(this.value, newFileList)) {
+            console.log('value actually changed', this.value, newFileList)
+//            this.value = newFileList
             this.onValueChanged({
                 fieldId: this.field!.id,
-                value: input.files.filter(uf => !uf.abort).map(uf => { return {
-                    targetUrl: uf.uploadTarget,
-                    id: this.getFileId(uf.uploadTarget),
-                    name: uf.name,
-                    type: uf.type
-                } as File })})
+                value: newFileList
+            })
         }
-        if (e.detail.value == 100) {
-            console.log('upload complete', e, input.files)
-            //input.target = `${this.baseUrl + '/files/' + this.fileidprefix + nanoid()}`
-            this.onValueChanged({
-                fieldId: this.field!.id,
-                value: input.files.filter(uf => !uf.abort).map(uf => { return {
-                    targetUrl: uf.uploadTarget,
-                    id: this.getFileId(uf.uploadTarget),
-                    name: uf.name,
-                    type: uf.type
-                } as File })})
-        }
+    }
+
+    areEqual(old: File[], now: File[]): boolean {
+        const oldstr = old?old.map(f => f.name).join(','):''
+        const nowstr = now?now.map(f => f.name).join(','):''
+        return oldstr == nowstr;
     }
 
     getFileId(uploadTarget: string) {
@@ -122,7 +131,7 @@ export class FieldFile extends LitElement implements Component {
     value: File[] = [];
 
     @state()
-    files: UploadFile[] = [];
+    files: File[] = [];
 
     @property()
     enabled = true;
@@ -151,6 +160,7 @@ export class FieldFile extends LitElement implements Component {
                 label="${this.label}"
                 .maxFiles="${this.maxfiles}"
                 @files-changed=${this.onChange}
+                @upload-success=${this.onChange}
                            name="${this.name}" 
                            id="${this.name}"
                            .files=${this.files}
@@ -175,8 +185,9 @@ export class FieldFile extends LitElement implements Component {
             width: 100%;
         }
     `
-
 }
+
+
 
 declare global {
     interface HTMLElementTagNameMap {

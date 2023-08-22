@@ -49,7 +49,6 @@ export class MateuForm extends LitElement implements FormElement {
     // @ts-ignore
     obj[key] = value;
     this.valueChangedKey = key
-    console.log('valueChanged', key, value)
     this.data = { ...this.data, ...obj}
     this.runRules()
   }
