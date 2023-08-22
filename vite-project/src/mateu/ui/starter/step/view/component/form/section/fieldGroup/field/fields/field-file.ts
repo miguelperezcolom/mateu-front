@@ -87,7 +87,7 @@ export class FieldFile extends LitElement implements Component {
     @property()
     onChange = (e:CustomEvent) => {
         const input = e.target as UploadElement;
-        if (e.type == 'files-changed') {
+        if (e.type == 'files-changed' && e.detail.path?.indexOf('abort') > 0) {
             this.checkAndSendNotifyChanged(input)
         }
         if (e.type == 'upload-success') {
@@ -96,7 +96,6 @@ export class FieldFile extends LitElement implements Component {
     }
 
     private checkAndSendNotifyChanged(input: UploadElement) {
-        console.log('files', input.files);
         const newFileList = input.files.filter(uf => !uf.abort).map(uf => { return {
             targetUrl: uf.uploadTarget,
             id: this.getFileId(uf.uploadTarget),
@@ -104,7 +103,6 @@ export class FieldFile extends LitElement implements Component {
             type: uf.type
         } as File })
         if (!this.areEqual(this.value, newFileList)) {
-            console.log('value actually changed', this.value, newFileList)
 //            this.value = newFileList
             this.onValueChanged({
                 fieldId: this.field!.id,
