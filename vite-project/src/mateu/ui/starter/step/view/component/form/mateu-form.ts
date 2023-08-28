@@ -50,7 +50,11 @@ export class MateuForm extends LitElement implements FormElement {
     obj[key] = value;
     this.valueChangedKey = key
     this.data = { ...this.data, ...obj}
-    this.runRules()
+    try {
+      this.runRules()
+    } catch (e) {
+      console.log(e);
+    }
     this.valueChangedKey = undefined
   }
 
