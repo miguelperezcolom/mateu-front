@@ -48,10 +48,10 @@ export class MateuForm extends LitElement implements FormElement {
     const obj = {};
     // @ts-ignore
     obj[key] = value;
-    console.log('value changed', key, value)
     this.valueChangedKey = key
     this.data = { ...this.data, ...obj}
     this.runRules()
+    this.valueChangedKey = undefined
   }
 
   getValue(key: string): object | undefined {
@@ -89,7 +89,6 @@ export class MateuForm extends LitElement implements FormElement {
     try {
       const applies = eval(this.buildJs(r.filter));
       if (applies) {
-        this.valueChangedKey = undefined
         if ("Hide" == r.action) {
           const fieldIds = r.data as string[];
           this.metadata.sections

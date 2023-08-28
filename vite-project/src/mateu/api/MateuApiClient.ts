@@ -19,10 +19,10 @@ export default class MateuApiClient {
         this.axiosInstance.interceptors.request.use(config => {
             const token = localStorage.getItem('__mateu_auth_token');
             if (token) {
-                console.log('adding token' + token)
+                //console.log('adding token' + token)
                 config.headers.Authorization =  'Bearer ' + token;
             } else {
-                console.log('no token added')
+                //console.log('no token added')
             }
             return config;
         })
@@ -79,7 +79,7 @@ export default class MateuApiClient {
     }
 
     async get(uri: string): Promise<AxiosResponse> {
-        console.log('get', uri)
+        //console.log('get', uri)
         const abortController =  new AbortController();
         abortControllers = [...abortControllers, abortController]
 
@@ -89,7 +89,7 @@ export default class MateuApiClient {
     }
 
     async getBlob(uri: string): Promise<AxiosResponse> {
-        console.log('get', uri)
+        //console.log('get', uri)
         const abortController =  new AbortController();
         abortControllers = [...abortControllers, abortController]
 
@@ -100,7 +100,7 @@ export default class MateuApiClient {
     }
 
     async post(uri: string, data: unknown): Promise<void> {
-        console.log('post', uri, data)
+        //console.log('post', uri, data)
         const abortController =  new AbortController();
         abortControllers = [...abortControllers, abortController]
 
