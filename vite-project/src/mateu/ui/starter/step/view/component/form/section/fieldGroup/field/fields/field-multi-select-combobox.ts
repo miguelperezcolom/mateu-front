@@ -99,6 +99,7 @@ export class FieldMultiSelectCombobox extends LitElement implements Component {
                              label="${this.label}"
                              name="${this.name}"
                              id="${this.name}"
+                             data-testid="${this.name}"
                              ?disabled=${!this.enabled}
                              ?required=${this.required} 
                              .items="${this.items}"

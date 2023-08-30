@@ -125,6 +125,7 @@ export class FieldExternalRef extends LitElement implements Component {
                                 @change=${this.onChange} 
                            name="${this.name}" 
                            id="${this.id}"
+                              data-testid="${this.name}"
                            value=${this.value}
                    ?disabled=${!this.enabled}
                                 ?required=${this.required}

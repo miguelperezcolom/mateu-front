@@ -84,6 +84,7 @@ export class FieldUrl extends LitElement implements Component {
                 @change=${this.onChange} 
                            name="${this.name}" 
                            id="${this.name}"
+                data-testid="${this.name}"
                    ?disabled=${!this.enabled}
                 ?required=${this.required}
                 placeholder="${this.placeholder}"

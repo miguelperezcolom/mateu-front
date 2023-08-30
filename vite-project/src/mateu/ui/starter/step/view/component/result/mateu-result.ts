@@ -92,7 +92,7 @@ export class MateuResult extends LitElement {
       
       <vaadin-vertical-layout style="align-items: center;">
         <vaadin-icon icon="${this.getIcon(this.metadata.resultType)}" class="${this.getClass(this.metadata.resultType)}" size="64"></vaadin-icon>
-        <div><h3>${this.metadata.message}</h3></div>
+        <div><h3 data-testid="message">${this.metadata.message}</h3></div>
         
         ${this.metadata.interestingLinks?.length > 0?html`
 
@@ -103,7 +103,9 @@ export class MateuResult extends LitElement {
             
             ${this.metadata.interestingLinks.map(l => html`
 
-    <div class="youmayalsolink"><vaadin-button theme="tertiary" @click=${this.runAction} actionId=${l.value}>${l.description}</vaadin-button></div>                   
+    <div class="youmayalsolink"><vaadin-button theme="tertiary" @click=${this.runAction}
+                                               data-testid="link-${l.value}"
+                                               actionId=${l.value}>${l.description}</vaadin-button></div>                   
 
 `)}
             </vaadin-vertical-layout>
@@ -118,10 +120,14 @@ export class MateuResult extends LitElement {
       <vaadin-horizontal-layout style="justify-content: end;" theme="spacing">
         <slot></slot>
         ${!this.metadata.nowTo && this.previousStepId?html`
-          <vaadin-button theme="secondary" @click=${this.goBack}>Back</vaadin-button>
+          <vaadin-button theme="secondary" @click=${this.goBack}
+            data-testid="action-back"
+          >Back</vaadin-button>
         `:''}
         ${this.metadata.nowTo?html`
-          <vaadin-button theme="primary" @click=${this.runAction} actionId=${this.metadata.nowTo.value}>${this.metadata.nowTo.description}</vaadin-button>
+          <vaadin-button theme="primary" @click=${this.runAction} 
+                         data-testid="action-nowto"
+                         actionId=${this.metadata.nowTo.value}>${this.metadata.nowTo.description}</vaadin-button>
         `:''}
       </vaadin-horizontal-layout>
     `

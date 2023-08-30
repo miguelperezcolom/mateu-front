@@ -83,7 +83,7 @@ export class FieldBoolean extends LitElement implements Component {
                 <vaadin-checkbox label="Yes"
             @change=${this.onChange} 
                            name="${this.name}" 
-                           id="${this.name}"
+                           id="${this.name}" data-testid="${this.name}"
                            value=${this.value}
                                  ?checked=${this.value}
                    ?disabled=${!this.enabled}

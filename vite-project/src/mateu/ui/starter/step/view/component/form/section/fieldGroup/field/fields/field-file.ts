@@ -161,6 +161,7 @@ export class FieldFile extends LitElement implements Component {
                 @upload-success=${this.onChange}
                            name="${this.name}" 
                            id="${this.name}"
+                data-testid="${this.name}"
                            .files=${this.files}
                    ?disabled=${!this.enabled}
                 ?required=${this.required}

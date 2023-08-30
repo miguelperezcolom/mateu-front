@@ -82,7 +82,7 @@ export class FieldToggle extends LitElement implements Component {
             <div class="vaadin-field-container">
                 <vaadin-horizontal-layout>
                     <h5 style="flex-grow: 1;">${this.label}</h5>
-                    <paper-toggle-button id="mitoggle"
+                    <paper-toggle-button id="mitoggle" data-testid="${this.name}"
                                          ?disabled=${!this.enabled}
                                          ?checked=${this.value}
                                          @change=${this.onChange}></paper-toggle-button>

@@ -102,6 +102,7 @@ export class FieldBooleanArray extends LitElement implements Component {
                 @change=${this.onChange} 
                            name="${this.name}" 
                            id="${this.name}"
+                data-testid="${this.name}"
                            value=${this.value}
                    ?disabled=${!this.enabled}
                 ?required=${this.required}

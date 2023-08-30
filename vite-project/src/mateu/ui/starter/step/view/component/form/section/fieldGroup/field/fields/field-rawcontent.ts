@@ -79,7 +79,7 @@ export class FieldRawContent extends LitElement implements Component {
 
     render() {
         return html`
-            <div>${unsafeHTML(this.value)}</div>
+            <div data-testid="${this.name}">${unsafeHTML(this.value)}</div>
             `
     }
 

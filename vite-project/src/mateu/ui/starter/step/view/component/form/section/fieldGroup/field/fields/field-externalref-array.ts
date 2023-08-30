@@ -125,6 +125,7 @@ export class FieldExternalrefArray extends LitElement implements Component {
                              label="${this.label}"
                              name="${this.name}"
                              id="${this.name}"
+                                           data-testid="${this.name}"
                              ?disabled=${!this.enabled}
                              ?required=${this.required}
                              item-label-path="key"

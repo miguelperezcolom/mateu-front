@@ -84,13 +84,14 @@ export class FieldBooleanRadioButtons extends LitElement implements Component {
                                 @change=${this.onChange} 
                            name="${this.name}" 
                            id="${this.name}"
+                                data-testid="${this.name}"
                            value=${this.value}
                    ?disabled=${!this.enabled}
                                 ?required=${this.required}
                                 placeholder="${this.placeholder}"
             >
-                    <vaadin-radio-button value=true label="Yes" style="width: 50%;"></vaadin-radio-button>
-                    <vaadin-radio-button value=false label="No" style="width: 49%;"></vaadin-radio-button>
+                    <vaadin-radio-button value=true label="Yes" data-testid="${this.name}-yes"style="width: 50%;"></vaadin-radio-button>
+                    <vaadin-radio-button value=false label="No" data-testid="${this.name}-no" style="width: 49%;"></vaadin-radio-button>
             </vaadin-radio-group>
             `
     }

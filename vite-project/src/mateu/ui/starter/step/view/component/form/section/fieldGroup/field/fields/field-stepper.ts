@@ -80,9 +80,9 @@ export class FieldStepper extends LitElement implements Component {
 
     render() {
         return html`
-            <div style="color: var(--lumo-secondary-text-color);">
+            <div style="color: var(--lumo-secondary-text-color);" data-testid="${this.name}">
                 <div>${this.value?.text}</div>
-                <vaadin-progress-bar value="${this.value?.value}"></vaadin-progress-bar>
+                <vaadin-progress-bar value="${this.value?.value}" part="progressbar"></vaadin-progress-bar>
             </div>
             `
     }

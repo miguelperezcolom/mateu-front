@@ -294,7 +294,7 @@ export class MateuForm extends LitElement implements FormElement {
           </div>
           <vaadin-horizontal-layout style="justify-content: end; flex-grow: 1; align-items: center;" theme="spacing">
             ${this.metadata.actions.filter(a => a.visible).map(a => html`
-            <vaadin-button theme="secondary" @click=${this.runAction} actionId=${a.id}>${a.caption}</vaadin-button>
+            <vaadin-button theme="secondary" @click=${this.runAction} actionId=${a.id} data-testid="action-${a.id}">${a.caption}</vaadin-button>
           `)}
           </vaadin-horizontal-layout>
         </vaadin-horizontal-layout>
@@ -313,7 +313,9 @@ export class MateuForm extends LitElement implements FormElement {
         <vaadin-horizontal-layout style="justify-content: end;" theme="spacing">
           <slot></slot>
           ${this.metadata.mainActions.map(a => html`
-            <vaadin-button theme="${ActionType.Primary == a.type?'primary':'secondary'}" @click=${this.runAction} actionId=${a.id}>${a.caption}</vaadin-button>
+            <vaadin-button theme="${ActionType.Primary == a.type?'primary':'secondary'}"
+                           data-testid="action-${a.id}"
+                           @click=${this.runAction} actionId=${a.id}>${a.caption}</vaadin-button>
           `)}
         </vaadin-horizontal-layout>
 
@@ -332,10 +334,12 @@ export class MateuForm extends LitElement implements FormElement {
   ${dialogRenderer(() => html`${this.confirmationTexts?.message}`, [])}
   ${dialogFooterRenderer(
         () => html`
-      <vaadin-button theme="primary error" @click="${this.runConfirmedAction}" style="margin-right: auto;">
+      <vaadin-button theme="primary error" @click="${this.runConfirmedAction}"
+                     data-testid="dialog-confirm" style="margin-right: auto;">
         ${this.confirmationTexts?.action}
       </vaadin-button>
-      <vaadin-button theme="tertiary" @click="${this.closeConfirmation}">Cancel</vaadin-button>
+      <vaadin-button theme="tertiary" @click="${this.closeConfirmation}"
+            data-testid="dialog-cancel">Cancel</vaadin-button>
     `,
         []
     )}

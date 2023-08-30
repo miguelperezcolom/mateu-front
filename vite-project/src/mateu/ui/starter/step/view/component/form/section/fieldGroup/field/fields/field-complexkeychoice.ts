@@ -134,7 +134,8 @@ export class FieldComplexKeyChoice extends LitElement implements Component {
                     <div class="header"><h5>${c.key.title}</h5>
                         <input type="radio" name="option"
                                @click="${this.select}" 
-                               value="${c.value}" 
+                               value="${c.value}"
+                               data-testid="${this.name}-${c.value}"
                                ?checked=${c.value === this.value?.value}></div>
                     <p>${c.key.text}</p>
                     <div class="footer">

@@ -1,5 +1,6 @@
 import Field from "../../../../../../api/dtos/Field";
 import Component from "./section/fieldGroup/field/fields/interfaces/Component";
+import {MateuField} from "./section/fieldGroup/field/mateu-field";
 
 export default class FieldWrapper {
 
@@ -17,9 +18,12 @@ export default class FieldWrapper {
 
     component: Component | undefined = undefined;
 
+    mateuFeld: MateuField | undefined = undefined
+
     setVisible(visible: boolean) {
         this.visible = visible;
-        this.container?.setAttribute('style', 'display: ' + (this.visible?'block':'none'));
+        this.container?.setAttribute('style', 'display: block;');
+        this.mateuFeld!.style.display = this.visible?'block':'none'
     }
 
     setEnabled(enabled: boolean) {

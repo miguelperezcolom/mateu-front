@@ -104,23 +104,25 @@ export class FieldTelephone extends LitElement implements Component {
     render() {
         return html`
             <vaadin-custom-field
+                    data-testid="${this.name}"
                     label="${this.label}"
                     ?required=${this.required}
                     helper-text="${this.field?.description}"
             >
                 <vaadin-select
+                        role="prefix"
                         value="${this.telprefix}"
                         @value-changed=${this.onPrefixChange}
                         ?required=${this.required}
                         ${selectRenderer(
                                 () => html`
-            <vaadin-list-box>
+            <vaadin-list-box role="list-box">
               ${this.field?.attributes
                       .map(a => a.value as TelephonePrefix)
                       .map(
                                         (a) => html`
                   <!-- Use the label attribute to display full name of the person as selected value label -->
-                  <vaadin-item value="${a.value}"  >
+                  <vaadin-item value="${a.value}" role="item" data-testid="${this.name}-${a.value}">
                     <div style="display: flex; align-items: center;">
                       <img
                         src="${a.img}"
@@ -142,6 +144,7 @@ export class FieldTelephone extends LitElement implements Component {
                 @change=${this.onNumberChange} 
                            name="${this.name}" 
                            id="${this.name}"
+                role="number"
                            value=${this.number}
                    ?disabled=${!this.enabled}
                 ?required=${this.required}

@@ -86,11 +86,13 @@ export class FieldEnumArray extends LitElement implements Component {
                                    .value="${this.value}"
                            name="${this.name}" 
                            id="${this.name}"
+                                   data-testid="${this.name}"
                    ?disabled=${!this.enabled}
                                 ?required=${this.required}
             >
                 ${this.field!.attributes.filter(a => a.key == 'choice').map(a => a.value as Value).map(v => html`
-                    <vaadin-checkbox value=${v.value} label=${v.key}></vaadin-checkbox>
+                    <vaadin-checkbox value=${v.value} label=${v.key}
+                                     data-testid="${this.name}-${v.value}"></vaadin-checkbox>
                     `)}
             </vaadin-checkbox-group>
             `

@@ -100,7 +100,7 @@ export class MateuPaginator extends LitElement {
         ${this.pages.length == 1?html``:html`
           Page:
           ${this.pages.map(p => p.clickable?html`
-          <vaadin-button theme="tertiary" @click=${this.clickOnPage} page=${p.page}>${p.text}</vaadin-button>
+          <vaadin-button theme="tertiary" @click=${this.clickOnPage} page=${p.page} data-testid="page-${p.page}">${p.text}</vaadin-button>
         `:html` [ ${p.text} ] `)}
         `}
         
