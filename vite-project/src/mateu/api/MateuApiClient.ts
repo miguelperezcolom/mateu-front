@@ -78,6 +78,20 @@ export default class MateuApiClient {
         });
     }
 
+    async postMax2(uri: string, data:object): Promise<AxiosResponse> {
+        fetchRowsAbortController0.abort()
+        fetchRowsAbortController0 = fetchRowsAbortController1
+        const abortController =  new AbortController();
+        fetchRowsAbortController1 = abortController
+
+        abortControllers = [...abortControllers, abortController]
+
+        return this.axiosInstance.post(uri, data, {
+            signal: abortController.signal
+        });
+    }
+
+
     async get(uri: string): Promise<AxiosResponse> {
         //console.log('get', uri)
         const abortController =  new AbortController();
@@ -100,6 +114,16 @@ export default class MateuApiClient {
     }
 
     async post(uri: string, data: unknown): Promise<void> {
+        //console.log('post', uri, data)
+        const abortController =  new AbortController();
+        abortControllers = [...abortControllers, abortController]
+
+        return this.axiosInstance.post(uri, data,{
+            signal: abortController.signal
+        });
+    }
+
+    async getUsingPost(uri: string, data: unknown): Promise<AxiosResponse> {
         //console.log('post', uri, data)
         const abortController =  new AbortController();
         abortControllers = [...abortControllers, abortController]
@@ -167,23 +191,23 @@ export default class MateuApiClient {
 
     async fetchRows(journeyType: string, journeyId: string, stepId: string, listId: string,
                     page: number, pageSize: number,
-                    sortOrders: string, filters: string
+                    sortOrders: string, filters: object
                     ): Promise<any[]> {
-        return await this.wrap<any[]>(this.getMax2(this.baseUrl + "/journeys/" + journeyType
+        return await this.wrap<any[]>(this.postMax2(this.baseUrl + "/journeys/" + journeyType
             + '/' + journeyId +
             "/steps/" + stepId +
             "/lists/" + listId + "/rows?page=" + page + "&page_size=" + pageSize +
-            "&ordering=" + sortOrders + "&filters=" + filters)
+            "&ordering=" + sortOrders, filters)
             .then((response) => response.data))
     }
 
     async fetchCount(journeyType: string, journeyId: string, stepId: string, listId: string,
-                     filters: string
+                     filters: object
     ): Promise<number> {
-        return await this.wrap<number>(this.get(this.baseUrl + "/journeys/" + journeyType
+        return await this.wrap<number>(this.getUsingPost(this.baseUrl + "/journeys/" + journeyType
             + '/' + journeyId
             + "/steps/" + stepId +
-            "/lists/" + listId + "/count?filters=" + filters)
+            "/lists/" + listId + "/count", filters)
             .then((response) => response.data))
     }
 
