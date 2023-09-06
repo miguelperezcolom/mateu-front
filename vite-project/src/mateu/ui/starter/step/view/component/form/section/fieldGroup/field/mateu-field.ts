@@ -34,6 +34,7 @@ import './fields/field-telephone'
 import './fields/field-complexkeychoice'
 import './fields/field-crud'
 import './fields/field-multi-select-combobox'
+import './fields/field-rich-text'
 import FieldWrapper from "../../../FieldWrapper";
 
 /**
