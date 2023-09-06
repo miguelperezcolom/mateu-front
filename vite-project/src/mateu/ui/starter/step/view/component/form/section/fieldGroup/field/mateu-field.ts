@@ -133,7 +133,7 @@ export class MateuField extends LitElement {
     const wrapper = this.shadowRoot!.getElementById('wrapper') as unknown;
     if (this.fieldWrapper) {
       this.fieldWrapper.container = wrapper as HTMLElement;
-      this.fieldWrapper.mateuFeld = this
+      this.fieldWrapper.mateuField = this
       this.fieldWrapper.component = this.component;
     } else {
       console.log('missing wrapper for ', this.field.id)

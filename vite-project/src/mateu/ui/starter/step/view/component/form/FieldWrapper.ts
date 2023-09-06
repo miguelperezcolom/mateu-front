@@ -18,12 +18,14 @@ export default class FieldWrapper {
 
     component: Component | undefined = undefined;
 
-    mateuFeld: MateuField | undefined = undefined
+    mateuField: MateuField | undefined = undefined
 
     setVisible(visible: boolean) {
         this.visible = visible;
         this.container?.setAttribute('style', 'display: block;');
-        this.mateuFeld!.style.display = this.visible?'block':'none'
+        if (this.mateuField) {
+            this.mateuField.style.display = this.visible?'block':'none'
+        }
     }
 
     setEnabled(enabled: boolean) {

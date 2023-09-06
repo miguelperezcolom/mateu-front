@@ -118,6 +118,7 @@ export class MateuCrud extends LitElement {
     const page = this.page;
     const pageSize = this.pageSize;
 
+
     this.fetchData({
       page,
       pageSize,
@@ -130,7 +131,8 @@ export class MateuCrud extends LitElement {
           order: direction
         }
       }))),
-      filters: Base64.encode(JSON.stringify(this.data)),
+      // @ts-ignore
+      filters: this.data,
     }).catch((error) => {
       console.log('error', error)
     }).then(result => {
@@ -192,7 +194,7 @@ export class MateuCrud extends LitElement {
   async fetchData(params: {
     page: number;
     pageSize: number;
-    filters: string;
+    filters: object;
     sortOrders: string;
   }) {
     const rows = await this.fetchRows(params);
@@ -213,17 +215,17 @@ export class MateuCrud extends LitElement {
   async fetchRows(params: {
     page: number;
     pageSize: number;
-    filters: string;
+    filters: object;
     sortOrders: string;
   }): Promise<any[]> {
-    this.lastFilters = params.filters;
+    this.lastFilters = Base64.encode(JSON.stringify(params.filters));
     this.lastSortOrders = params.sortOrders;
     return new MateuApiClient(this.baseUrl).fetchRows(this.journeyTypeId, this.journeyId,
         this.stepId, this.listId, params.page, params.pageSize,
         params.sortOrders, params.filters)
   }
 
-  async fetchCount(filters: string): Promise<number> {
+  async fetchCount(filters: object): Promise<number> {
     return new MateuApiClient(this.baseUrl).fetchCount(this.journeyTypeId, this.journeyId,
         this.stepId, this.listId, filters)
   }
