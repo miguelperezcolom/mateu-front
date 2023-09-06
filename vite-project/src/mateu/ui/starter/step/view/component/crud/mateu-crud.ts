@@ -155,9 +155,9 @@ export class MateuCrud extends LitElement {
     || changedProperties.has("journeyId")
     || changedProperties.has("stepId")
     || changedProperties.has("listId")) {
-      let searchSignature = this.searchSignature;
+      let currentSearchSignature = this.searchSignature;
       if (changedProperties.has("searchSignature")) {
-        searchSignature = changedProperties.get("searchSignature") as string;
+        currentSearchSignature = changedProperties.get("searchSignature") as string;
       }
       let journeyId = this.journeyId;
       if (changedProperties.has("journeyId")) {
@@ -172,23 +172,32 @@ export class MateuCrud extends LitElement {
         listId = changedProperties.get("listId") as string;
       }
       this.setUp();
-      if (searchSignature == journeyId + '-' + stepId + '-' + listId) {
-        setTimeout(() => this.search());
+      if (currentSearchSignature != journeyId + '-' + stepId + '-' + listId
+          || currentSearchSignature != this.searchSignature) {
+        console.log('signature has changed')
+        setTimeout(() => this.search(currentSearchSignature));
+      } else {
+        console.log('signature has not changed')
       }
     }
   }
 
-  search() {
-    console.log('signature', this.searchSignature, this.journeyId + '-' + this.stepId + '-' + this.listId)
-    if (this.searchSignature != this.journeyId + '-' + this.stepId + '-' + this.listId) {
+  search(currentSearchSignature: string) {
+    if (currentSearchSignature != this.journeyId + '-' + this.stepId + '-' + this.listId) {
       this.doSearch();
     }
   }
 
   doSearch() {
+    console.log('do search!!!!')
     const grid = this.shadowRoot!.getElementById('grid') as Grid;
     this.page = 0;
-    grid.clearCache();
+    if (grid) {
+      grid.clearCache();
+    } else {
+      console.log('grid no existe')
+    }
+    this.searchSignature = this.journeyId + '-' + this.stepId + '-' + this.listId
   }
 
   async fetchData(params: {
@@ -231,21 +240,24 @@ export class MateuCrud extends LitElement {
   }
 
   connectedCallback() {
+    console.log('connected')
     super.connectedCallback();
     this.setUp()
   }
 
   disconnectedCallback() {
+    console.log('disconnected')
     this.removeEventListener('keydown', this.handleKey)
     super.disconnectedCallback();
   }
 
   setUp() {
-
   }
 
   protected firstUpdated(_changedProperties: PropertyValues) {
-      this.addEventListener('keydown', this.handleKey);
+    console.log('first updated')
+    this.search('')
+    this.addEventListener('keydown', this.handleKey);
   }
 
   private handleKey(e: KeyboardEvent) {
