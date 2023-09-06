@@ -5,6 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AQUIELTITULODELAPAGINA</title>
+    <script src="https://editor.unlayer.com/embed.js"></script>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.0.1/model-viewer.min.js"></script>
     <script type="module" src="https://unpkg.com/test-custom-components/dist/assets/custom-elements.js"></script>
     <script type="module" src="/src/lumo.js"></script>
@@ -31,6 +32,24 @@
         document.documentElement.setAttribute('theme', e.matches?'dark':'light')
       });
     }
+  </script>
+  <script>
+    console.log('adding event listeners to unlayer')
+    unlayer.addEventListener('editor:ready', function () {
+      console.log('editor:ready');
+    });
+
+    unlayer.addEventListener('design:updated', function(updates) {
+      // Design is updated by the user
+      console.log('design updated', updates)
+
+      unlayer.exportHtml(function (data) {
+        var json = data.design; // design json
+        var html = data.html; // design html
+
+        console.log(html)
+      })
+    });
   </script>
   </body>
 </html>
