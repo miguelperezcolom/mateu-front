@@ -12,5 +12,5 @@ export default interface Step {
     };
     rules: Rule[];
     previousStepId: string;
-
+    timestamp: string
 }

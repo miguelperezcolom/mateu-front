@@ -3,6 +3,7 @@ import axios, {AxiosResponse} from "axios";
 import JourneyType from "./dtos/JourneyType";
 import Journey from "./dtos/Journey";
 import Step from "./dtos/Step";
+import {nanoid} from "nanoid";
 
 let abortControllers: AbortController[] = [];
 let fetchRowsAbortController0 = new AbortController()
@@ -168,7 +169,11 @@ export default class MateuApiClient {
     async fetchStep(journeyType: string, journeyId: string, stepId: string): Promise<Step> {
         return await this.wrap<Step>(this.get(this.baseUrl + '/journeys/' +
             journeyType + '/' + journeyId + '/steps/' + stepId)
-                .then((response) => response.data))
+                .then((response) => {
+                    const newStep = response.data
+                    newStep.timestamp = nanoid()
+                    return newStep
+                }))
     }
 
     async runStepAction(journeyType: string, journeyId: string, stepId: string, actionId: string,

@@ -92,6 +92,7 @@ export class MateuComponent extends LitElement {
                             stepId="${this.stepId}"
                             listId="${(this.component.metadata as Crud).listId}"
                             .rules=${this.step.rules}
+                            timestamp="${this.step.timestamp}"
                             baseUrl="${this.baseUrl}"
                             previousStepId="${this.previousStepId}"
                             searchSignature="${this.journeyId}-${this.stepId}-${(this.component.metadata as Crud).listId}"

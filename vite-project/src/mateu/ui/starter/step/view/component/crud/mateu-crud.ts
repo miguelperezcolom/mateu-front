@@ -49,13 +49,15 @@ export class MateuCrud extends LitElement {
   stepId!: string
 
   @property()
+  timestamp!: string
+
+  @property()
   previousStepId!: string
 
   @property()
   listId!: string
 
-  @property()
-  searchSignature!: string
+  searchSignature = ''
 
 
   @property()
@@ -154,6 +156,7 @@ export class MateuCrud extends LitElement {
     if (changedProperties.has("searchSignature")
     || changedProperties.has("journeyId")
     || changedProperties.has("stepId")
+    || changedProperties.has("timestamp")
     || changedProperties.has("listId")) {
       let currentSearchSignature = this.searchSignature;
       if (changedProperties.has("searchSignature")) {
@@ -167,23 +170,32 @@ export class MateuCrud extends LitElement {
       if (changedProperties.has("stepId")) {
         stepId = changedProperties.get("stepId") as string;
       }
+      let timestamp = this.timestamp;
+      if (changedProperties.has("timestamp")) {
+        timestamp = changedProperties.get("timestamp") as string;
+      }
       let listId = this.listId;
       if (changedProperties.has("listId")) {
         listId = changedProperties.get("listId") as string;
       }
       this.setUp();
-      if (currentSearchSignature != journeyId + '-' + stepId + '-' + listId
-          || currentSearchSignature != this.searchSignature) {
+      console.log(currentSearchSignature, this.searchSignature)
+      if (currentSearchSignature != journeyId + '-' + stepId + '-' + timestamp + '-' + listId) {
+        currentSearchSignature = journeyId + '-' + stepId + '-' + timestamp + '-' + listId
         console.log('signature has changed')
-        setTimeout(() => this.search(currentSearchSignature));
+        //setTimeout(() => this.search(currentSearchSignature));
+        this.search(currentSearchSignature)
       } else {
+        currentSearchSignature = journeyId + '-' + stepId + '-' + timestamp + '-' + listId
         console.log('signature has not changed')
       }
     }
   }
 
   search(currentSearchSignature: string) {
-    if (currentSearchSignature != this.journeyId + '-' + this.stepId + '-' + this.listId) {
+    if (currentSearchSignature && (!this.searchSignature || currentSearchSignature != this.searchSignature)) {
+      this.searchSignature = currentSearchSignature
+      console.log(currentSearchSignature, this.searchSignature)
       this.doSearch();
     }
   }
@@ -197,7 +209,7 @@ export class MateuCrud extends LitElement {
     } else {
       console.log('grid no existe')
     }
-    this.searchSignature = this.journeyId + '-' + this.stepId + '-' + this.listId
+    //this.searchSignature = this.journeyId + '-' + this.stepId + '-' + this.timestamp + '-' + this.listId
   }
 
   async fetchData(params: {
@@ -256,7 +268,7 @@ export class MateuCrud extends LitElement {
 
   protected firstUpdated(_changedProperties: PropertyValues) {
     console.log('first updated')
-    this.search('')
+    //this.search('')
     this.addEventListener('keydown', this.handleKey);
   }
 
@@ -436,6 +448,7 @@ export class MateuCrud extends LitElement {
   pageChanged(e: CustomEvent) {
     const grid = this.shadowRoot!.getElementById('grid') as Grid;
     this.page = e.detail.page;
+    console.log('page changed to ' + this.page)
     grid.clearCache();
   }
 
