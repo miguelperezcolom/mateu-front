@@ -41,6 +41,10 @@ export class RichTextUnlayer extends LitElement implements Component {
     }
     setValue(value: unknown): void {
         this.value = value as string;
+        if (this.value && this.editor) {
+            //console.log('loading design', this.value)
+            this.editor.loadDesign(JSON.parse(this.value))
+        }
     }
 
     setBaseUrl(value: string): void {
@@ -115,24 +119,30 @@ export class RichTextUnlayer extends LitElement implements Component {
         const dis = this;
         this.editor.addEventListener('editor:ready', function () {
             console.log('editor:ready');
-            theeditor.loadDesign()
+            // theeditor.loadDesign({
+            //     html: '<html><body><div>This is a legacy HTML template.</div></body></html>',
+            //     classic: true
+            // })
+            if (dis.value) {
+                theeditor.loadDesign(JSON.parse(dis.value))
+            }
         });
         // @ts-ignore
         this.editor.addEventListener('design:updated', function(updates) {
             // Design is updated by the user
-            console.log('design updated', updates)
+            console.log('design updated')
 
             theeditor.exportHtml(function (data:any) {
                 // @ts-ignore
                 const json = data.design; // design json
-                const html = data.html; // design html
+                //const html = data.html; // design html
 
-                console.log(json)
+                //console.log(JSON.stringify(json))
                 //console.log(html)
 
                 dis.onValueChanged({
                     fieldId: dis.field!.id,
-                    value: html})
+                    value: JSON.stringify(json)})
             })
         });
 
