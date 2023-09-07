@@ -4,6 +4,7 @@ import Component from "./interfaces/Component";
 import ValueChangedEvent from "./interfaces/ValueChangedEvent";
 import '@vaadin/rich-text-editor'
 import Field from "../../../../../../../../../../api/dtos/Field";
+import {RichTextEditor, RichTextEditorHtmlValueChangedEvent} from "@vaadin/rich-text-editor";
 
 
 @customElement('field-rich-text-vaadin')
@@ -41,6 +42,11 @@ export class RichTextVaadin extends LitElement implements Component {
     }
     setValue(value: unknown): void {
         this.value = value as string;
+        this.json = JSON.stringify([
+            {"insert": this.value}
+        ])
+        const editor = this.renderRoot?.querySelector( 'vaadin-rich-text-editor' ) as RichTextEditor
+        if (editor) editor.dangerouslySetHtmlValue(this.value);
     }
 
     setBaseUrl(value: string): void {
@@ -62,6 +68,9 @@ export class RichTextVaadin extends LitElement implements Component {
 
     @property()
     name = '';
+
+    @property()
+    json = '[]';
 
     @property()
     onChange = (e:Event) => {
@@ -97,8 +106,15 @@ export class RichTextVaadin extends LitElement implements Component {
                     ?disabled=${!this.enabled}
                     ?required=${this.required}
                     placeholder="${this.placeholder}"
+                    
             >
                 <vaadin-rich-text-editor
+                                         @html-value-changed="${(event: RichTextEditorHtmlValueChangedEvent) => {
+                                             this.onValueChanged({
+                                                 fieldId: this.field?.id!,
+                                                 value: event.detail.value
+                                             })
+                                         }}"
                 ></vaadin-rich-text-editor>
             </vaadin-custom-field>
             `
