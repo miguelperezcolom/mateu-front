@@ -10,7 +10,8 @@ import "@vaadin/vaadin-grid/vaadin-grid-column";
 import "../form/section/fieldGroup/field/fields/field-externalref"
 import "./mateu-paginator"
 import {columnBodyRenderer} from '@vaadin/grid/lit.js';
-import {Grid, GridDataProvider} from "@vaadin/vaadin-grid";
+import {Grid} from "@vaadin/vaadin-grid";
+import {GridSortColumn} from "@vaadin/vaadin-grid/vaadin-grid-sort-column";
 import {Button} from "@vaadin/button";
 import {badge} from "@vaadin/vaadin-lumo-styles";
 import {StatusType} from "../../../../../../api/dtos/StatusType";
@@ -115,49 +116,16 @@ export class MateuCrud extends LitElement {
   @state()
   page = 0;
 
-  dataProvider: GridDataProvider<any> = async (params, callback) => {
-    //const { page, pageSize } = params;
-    const page = this.page;
-    const pageSize = this.pageSize;
-
-
-    this.fetchData({
-      page,
-      pageSize,
-      sortOrders: Base64.encode(JSON.stringify(params.sortOrders.map(o => {
-        let direction = 'None';
-        if ('asc' == o.direction) direction = 'Ascending';
-        if ('desc' == o.direction) direction = 'Descending';
-        return {
-          column: o.path,
-          order: direction
-        }
-      }))),
-      // @ts-ignore
-      filters: this.data,
-    }).catch((error) => {
-      console.log('error', error)
-    }).then(result => {
-      const {rows, count} = result!
-      // @ts-ignore
-      if (rows.code || count.code) {
-        console.log('fetch returned error or cancelled')
-        return
-      }
-      const gridCount = count > pageSize?pageSize:count;
-      rows.forEach((r, i) => {
-        r.__index = i + (page * pageSize);
-      })
-      callback(rows, gridCount);
-    });
-  };
+  @state()
+  items:any[] = []
 
   async updated(changedProperties: Map<string, unknown>) {
     if (changedProperties.has("searchSignature")
     || changedProperties.has("journeyId")
     || changedProperties.has("stepId")
     || changedProperties.has("timestamp")
-    || changedProperties.has("listId")) {
+    || changedProperties.has("listId")
+    || changedProperties.has("page")) {
       let currentSearchSignature = this.searchSignature;
       if (changedProperties.has("searchSignature")) {
         currentSearchSignature = changedProperties.get("searchSignature") as string;
@@ -178,15 +146,18 @@ export class MateuCrud extends LitElement {
       if (changedProperties.has("listId")) {
         listId = changedProperties.get("listId") as string;
       }
+      let page = this.page;
+      if (changedProperties.has("page")) {
+        page = changedProperties.get("page") as number;
+      }
       this.setUp();
       console.log(currentSearchSignature, this.searchSignature)
-      if (currentSearchSignature != journeyId + '-' + stepId + '-' + timestamp + '-' + listId) {
-        currentSearchSignature = journeyId + '-' + stepId + '-' + timestamp + '-' + listId
+      if (currentSearchSignature != journeyId + '-' + stepId + '-' + timestamp + '-' + listId + '-' + page) {
+        currentSearchSignature = journeyId + '-' + stepId + '-' + timestamp + '-' + listId + '-' + page
         console.log('signature has changed')
         //setTimeout(() => this.search(currentSearchSignature));
         this.search(currentSearchSignature)
       } else {
-        currentSearchSignature = journeyId + '-' + stepId + '-' + timestamp + '-' + listId
         console.log('signature has not changed')
       }
     }
@@ -203,9 +174,43 @@ export class MateuCrud extends LitElement {
   doSearch() {
     console.log('do search!!!!')
     const grid = this.shadowRoot!.getElementById('grid') as Grid;
-    this.page = 0;
+
     if (grid) {
-      grid.clearCache();
+      const page = this.page;
+      const pageSize = this.pageSize;
+
+      const nodelist = grid.querySelectorAll('vaadin-grid-sort-column');
+      const columns:GridSortColumn[] = Array.from(nodelist);
+      const sortOrders = Base64.encode(JSON.stringify(columns.filter(c => c.direction).map(o => {
+        let direction = 'None';
+        if ('asc' == o.direction) direction = 'Ascending';
+        if ('desc' == o.direction) direction = 'Descending';
+        return {
+          column: o.path,
+          order: direction
+        }
+      })))
+
+      this.fetchData({
+        page,
+        pageSize,
+        sortOrders,
+        // @ts-ignore
+        filters: this.data,
+      }).catch((error) => {
+        console.log('error', error)
+      }).then(result => {
+        const {rows, count} = result!
+        // @ts-ignore
+        if (rows.code || count.code) {
+          console.log('fetch returned error or cancelled')
+          return
+        }
+        rows.forEach((r, i) => {
+          r.__index = i + (page * pageSize);
+        })
+        this.items = rows
+      });
     } else {
       console.log('grid no existe')
     }
@@ -274,7 +279,15 @@ export class MateuCrud extends LitElement {
 
   private handleKey(e: KeyboardEvent) {
     if (e.code == 'Enter') {
-      setTimeout(() => this.doSearch());
+      this.clickedOnSearch()
+    }
+  }
+
+  private clickedOnSearch() {
+    if (this.page) {
+      this.page = 0
+    } else {
+      setTimeout(() => this.doSearch())
     }
   }
 
@@ -446,10 +459,9 @@ export class MateuCrud extends LitElement {
   }
 
   pageChanged(e: CustomEvent) {
-    const grid = this.shadowRoot!.getElementById('grid') as Grid;
     this.page = e.detail.page;
     console.log('page changed to ' + this.page)
-    grid.clearCache();
+    this.doSearch()
   }
 
   render() {
@@ -476,13 +488,13 @@ export class MateuCrud extends LitElement {
                              placeholder="${f.placeholder}"
                              style="flex-grow: 1;"></vaadin-text-field>
         `)}
-        <vaadin-button theme="primary" @click="${this.doSearch}" data-testid="search">Search</vaadin-button>
+        <vaadin-button theme="primary" @click="${this.clickedOnSearch}" data-testid="search">Search</vaadin-button>
       </vaadin-horizontal-layout>
 
       <vaadin-horizontal-layout style="align-items: baseline;" theme="spacing">
         ${this.metadata?.searchForm.fields.slice(1).map(f => mapField(f, this.filterChanged, this.baseUrl))}
       </vaadin-horizontal-layout>
-      <vaadin-grid id="grid" .dataProvider="${this.dataProvider}" all-rows-visible>
+      <vaadin-grid id="grid" .items="${this.items}" all-rows-visible>
         <vaadin-grid-selection-column></vaadin-grid-selection-column>
 
       ${this.metadata?.columns.map(c => {
