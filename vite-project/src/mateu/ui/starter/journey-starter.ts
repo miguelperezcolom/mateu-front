@@ -152,15 +152,20 @@ export class JourneyStarter extends LitElement {
         window.addEventListener('previous-requested', this.onPreviousRequested)
 
         if (this.journeyTypeId) {
-            this.journeyId = nanoid()
-            await new MateuApiClient(this.baseUrl).createJourney(this.journeyTypeId, this.journeyId)
-            this.journey = await new MateuApiClient(this.baseUrl).fetchJourney(this.journeyTypeId, this.journeyId!)
-            this.stepId = this.journey.currentStepId
-            if (this.stepId) {
-                this.step = await new MateuApiClient(this.baseUrl).fetchStep(this.journeyTypeId, this.journeyId, this.stepId)
-                this.previousStepId = this.step.previousStepId
-            } else {
-                console.log('fetchJourney has been cancelled')
+            if (!this.journeyId) {
+                this.journeyId = nanoid()
+                const rs = await new MateuApiClient(this.baseUrl).createJourney(this.journeyTypeId, this.journeyId)
+                // @ts-ignore
+                if (rs.status == 200) {
+                    this.journey = await new MateuApiClient(this.baseUrl).fetchJourney(this.journeyTypeId, this.journeyId)
+                    this.stepId = this.journey.currentStepId
+                    if (this.stepId) {
+                        this.step = await new MateuApiClient(this.baseUrl).fetchStep(this.journeyTypeId, this.journeyId, this.stepId)
+                        this.previousStepId = this.step.previousStepId
+                    } else {
+                        console.log('fetchJourney has been cancelled')
+                    }
+                }
             }
         } else {
             this.tipos = await new MateuApiClient(this.baseUrl).fetchJourneyTypes()
