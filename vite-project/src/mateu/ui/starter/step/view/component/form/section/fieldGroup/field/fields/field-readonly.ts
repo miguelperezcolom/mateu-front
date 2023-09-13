@@ -103,7 +103,6 @@ export class FieldReadonly extends LitElement implements Component {
                 data-testid="${this.name}"
                            value=${this.value}
                    ?disabled=${!this.enabled}
-                ?required=${this.required}
                 readonly
             ><div class="content" slot="textarea">${this.rawValue}</div></vaadin-text-area>
             `

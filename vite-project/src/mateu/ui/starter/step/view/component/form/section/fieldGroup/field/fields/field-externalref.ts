@@ -115,6 +115,10 @@ export class FieldExternalRef extends LitElement implements Component {
         const comboBox = this.shadowRoot?.querySelector('vaadin-combo-box') as ComboBox;
         comboBox.dataProvider = this.dataProvider;
         comboBox.selectedItem = this.value;
+        // @ts-ignore
+        comboBox.value = this.value?.value;
+        comboBox.invalid = false
+        console.log('again combo value when first updated', comboBox.value, this.value);
     }
 
 
@@ -126,10 +130,11 @@ export class FieldExternalRef extends LitElement implements Component {
                            name="${this.name}" 
                            id="${this.id}"
                               data-testid="${this.name}"
-                           value=${this.value}
+                           value=${this.value?.value}
                    ?disabled=${!this.enabled}
                                 ?required=${this.required}
                               item-label-path="key"
+                              item-value-path="value"
                               placeholder="${this.placeholder}"
             >
             </vaadin-combo-box>
