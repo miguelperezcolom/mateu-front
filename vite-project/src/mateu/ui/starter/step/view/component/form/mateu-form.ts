@@ -17,6 +17,8 @@ import {ActionType} from "../../../../../../api/dtos/ActionType";
 import MateuApiClient from "../../../../../../api/MateuApiClient";
 import ConfirmationTexts from "../../../../../../api/dtos/ConfirmationTexts";
 import {dialogFooterRenderer} from "@vaadin/dialog/lit";
+import ActionsMap from "./ActionsMap";
+import {Button} from "@vaadin/button";
 
 export interface FormElement {
 
@@ -64,6 +66,14 @@ export class MateuForm extends LitElement implements FormElement {
   }
 
   runRules() {
+    this.metadata.actions.map(a => a.id).map(id => this.actionsMap.map.get(id)).forEach(b => {
+      b!.style.display = ''
+      b!.disabled = false
+    });
+    this.metadata.mainActions.map(a => a.id).map(id => this.actionsMap.map.get(id)).forEach(b => {
+      b!.style.display = ''
+      b!.disabled = false
+    });
     this.metadata.sections
         .flatMap(s => s.fieldGroups)
         .flatMap(g => g.lines)
@@ -121,6 +131,24 @@ export class MateuForm extends LitElement implements FormElement {
           const actionId = r.data as string;
           this.doRunAction(actionId)
         }
+        if ("HideAction" == r.action) {
+          const actionIds = r.data as string[];
+          this.metadata.actions
+              .filter(f => actionIds?.includes(f.id))
+              .map(f => this.actionsMap.map.get(f.id))
+              .forEach(f => {
+                f!.style.display = 'none'
+              });
+        }
+        if ("DisableAction" == r.action) {
+          const actionIds = r.data as string[];
+          this.metadata.actions
+              .filter(f => actionIds?.includes(f.id))
+              .map(f => this.actionsMap.map.get(f.id))
+              .forEach(f => {
+                f!.disabled = true
+              });
+        }
         return true;
       }
     } catch (e) {
@@ -176,6 +204,9 @@ export class MateuForm extends LitElement implements FormElement {
   fieldsMap: FieldsMap = new FieldsMap();
 
   @property()
+  actionsMap: ActionsMap = new ActionsMap();
+
+  @property()
   confirmationOpened = false;
 
   @property()
@@ -212,6 +243,15 @@ export class MateuForm extends LitElement implements FormElement {
         .flatMap(g => g.lines)
         .flatMap(l => l.fields)
         .forEach(f => this.fieldsMap.map.set(f, new FieldWrapper(f)))
+    this.metadata.actions.map(a => a.id).forEach(id => {
+      const b = this.renderRoot.querySelector('vaadin-button[actionid="' + id + '"]') as Button
+      this.actionsMap.map.set(id, b)
+    })
+    this.metadata.mainActions.map(a => a.id).forEach(id => {
+      const b = this.renderRoot.querySelector('vaadin-button[actionid="' + id + '"]') as Button
+      this.actionsMap.map.set(id, b)
+    })
+
     setTimeout(() => this.runRules());
   }
 
@@ -233,14 +273,18 @@ export class MateuForm extends LitElement implements FormElement {
     super.disconnectedCallback();
   }
 
-
   async runAction(event: Event) {
-    const actionId = (event.target as HTMLElement).getAttribute('actionId');
+    const boton = (event.target as HTMLElement)
+    const actionId = boton.getAttribute('actionId');
+    boton.setAttribute("disabled", "disabled")
     if (!actionId) {
       console.log('Attribute actionId is missing for ' + event.target)
       return
     }
     await this.doRunAction(actionId);
+    if (boton.isConnected) {
+      boton.removeAttribute("disabled")
+    }
   }
 
   async doRunAction(actionId: string) {
