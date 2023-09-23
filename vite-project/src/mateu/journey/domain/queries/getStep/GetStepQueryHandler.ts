@@ -1,6 +1,6 @@
 import Step from "../../../../../../types/api/dtos/Step";
 import {GetStepQuery} from "./GetStepQuery";
-import MateuApiClient, {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
+import {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
 import {state} from "../../state";
 
 export class GetStepQueryHandler {

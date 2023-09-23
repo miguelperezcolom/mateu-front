@@ -1,4 +1,4 @@
-import MateuApiClient, {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
+import {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
 import {GoToIndexCommand} from "./GoToIndexCommand";
 import {state} from "../../state";
 

@@ -14,7 +14,7 @@ import Field from "../../../../../../../shared/apiClients/dtos/Field";
 import {badge} from "@vaadin/vaadin-lumo-styles";
 import {BadgeType} from "../../../../../../../shared/apiClients/dtos/BadgeType";
 import {ActionType} from "../../../../../../../shared/apiClients/dtos/ActionType";
-import MateuApiClient, {mateuApiClient} from "../../../../../../../shared/apiClients/MateuApiClient";
+import {mateuApiClient} from "../../../../../../../shared/apiClients/MateuApiClient";
 import ConfirmationTexts from "../../../../../../../shared/apiClients/dtos/ConfirmationTexts";
 import {dialogFooterRenderer} from "@vaadin/dialog/lit";
 import ActionsMap from "./ActionsMap";

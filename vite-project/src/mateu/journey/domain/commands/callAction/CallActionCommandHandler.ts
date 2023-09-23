@@ -1,5 +1,5 @@
 import {CallActionCommand} from "./CallActionCommand";
-import MateuApiClient, {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
+import {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
 import {state} from "../../state";
 
 export class CallActionCommandHandler {

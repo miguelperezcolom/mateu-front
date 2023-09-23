@@ -1,5 +1,5 @@
 import {LoadUiCommand} from "./LoadUiCommand";
-import MateuApiClient, {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
+import {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
 import {state} from "../../state";
 import Menu from "../../../../shared/apiClients/dtos/Menu";
 import {MenuBarItem} from "@vaadin/menu-bar";

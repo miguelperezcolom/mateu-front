@@ -7,7 +7,6 @@ import "@vaadin/icon";
 import {Button} from "@vaadin/button";
 import Result from "../../../../../../../shared/apiClients/dtos/Result";
 import {ResultType} from "../../../../../../../shared/apiClients/dtos/ResultType";
-import MateuApiClient, {mateuApiClient} from "../../../../../../../shared/apiClients/MateuApiClient";
 
 /**
  * An example element.

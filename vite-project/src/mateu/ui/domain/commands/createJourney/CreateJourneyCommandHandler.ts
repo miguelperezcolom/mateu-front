@@ -1,6 +1,6 @@
 import {CreateJourneyCommand} from "./CreateJourneyCommand"
 import {state} from "../../state"
-import MateuApiClient, {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
+import {mateuApiClient} from "../../../../shared/apiClients/MateuApiClient";
 
 export class CreateJourneyCommandHandler {
 

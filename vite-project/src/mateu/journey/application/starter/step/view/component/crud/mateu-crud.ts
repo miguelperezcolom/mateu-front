@@ -17,7 +17,7 @@ import {badge} from "@vaadin/vaadin-lumo-styles";
 import {StatusType} from "../../../../../../../shared/apiClients/dtos/StatusType";
 import Column from "../../../../../../../shared/apiClients/dtos/Column";
 import '@vaadin/menu-bar';
-import MateuApiClient, {mateuApiClient} from "../../../../../../../shared/apiClients/MateuApiClient";
+import {mateuApiClient} from "../../../../../../../shared/apiClients/MateuApiClient";
 import {Base64} from "js-base64";
 import ConfirmationTexts from "../../../../../../../shared/apiClients/dtos/ConfirmationTexts";
 import { dialogRenderer } from 'lit-vaadin-helpers';
