@@ -218,7 +218,7 @@ export default class MateuApiClient {
     }
 
     async getXls(journeyType: string, journeyId: string, stepId: string, listId: string,
-                 sortOrders: string, filters: string): Promise<void> {
+                 sortOrders: string, filters: any): Promise<void> {
         window.open(this.baseUrl + "/journeys/" + journeyType
             + '/' + journeyId +
             "/steps/" + stepId +
@@ -227,7 +227,7 @@ export default class MateuApiClient {
     }
 
     async getCsvMemory(journeyType: string, journeyId: string, stepId: string, listId: string,
-                 sortOrders: string, filters: string): Promise<void> {
+                 sortOrders: string, filters: any): Promise<void> {
         window.open()
         return await this.wrap<void>(this.getBlob(this.baseUrl + "/journeys/" + journeyType
             + '/' + journeyId +

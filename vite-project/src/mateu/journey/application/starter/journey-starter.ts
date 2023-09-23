@@ -59,12 +59,10 @@ export class JourneyStarter extends LitElement {
     renderNotification = () => html`${this.notificationMessage}`;
 
     runAction(event: CustomEvent) {
-        console.log('running', event)
         service.runAction(event.detail.actionId, event.detail.data).then()
     }
 
     goBack() {
-        console.log('going back')
         service.goBack().then()
     }
 
@@ -85,9 +83,6 @@ export class JourneyStarter extends LitElement {
 
     // write state to reactive properties
     stampState(state: State) {
-
-        console.log('received state', state)
-
         this.error = state.error
         this.journeyId = state.journeyId
         this.journey = state.journey
@@ -103,12 +98,14 @@ export class JourneyStarter extends LitElement {
 
     async updated(changedProperties: Map<string, unknown>) {
         if (changedProperties.has("baseUrl") || changedProperties.has("journeyTypeId")) {
-            if (this.baseUrl && this.journeyTypeId) {
-                console.log('starting journey due to props change', this.baseUrl, this.journeyTypeId, changedProperties)
-                mateuApiClient.baseUrl = this.baseUrl
-                mateuApiClient.element = this
-                service.startJourney(this.baseUrl, this.journeyTypeId).then()
-            }
+                setTimeout(() => {
+                    if (this.baseUrl && this.journeyTypeId) {
+                    console.log('starting journey due to props change', this.baseUrl, this.journeyTypeId, changedProperties)
+                    mateuApiClient.baseUrl = this.baseUrl
+                    mateuApiClient.element = this
+                    service.startJourney(this.baseUrl, this.journeyTypeId).then()
+                    }
+                })
         }
     }
 

@@ -28,7 +28,7 @@ export class ApiController implements ReactiveController {
     }
 
     onBackendCalled = () => {
-        console.log('backend called')
+        //console.log('backend called')
         if (this.activeCalls < 0) {
             this.activeCalls = 0
         }
@@ -37,7 +37,7 @@ export class ApiController implements ReactiveController {
     }
 
     onBackendSucceeded = () => {
-        console.log('backend succeed')
+        //console.log('backend succeed')
         this.activeCalls--;
         if (this.activeCalls < 0) {
             this.activeCalls = 0

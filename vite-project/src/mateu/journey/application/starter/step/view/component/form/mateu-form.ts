@@ -67,12 +67,16 @@ export class MateuForm extends LitElement implements FormElement {
 
   runRules() {
     this.metadata.actions.map(a => a.id).map(id => this.actionsMap.map.get(id)).forEach(b => {
-      b!.style.display = ''
-      b!.disabled = false
+      if (b) {
+        b.style.display = ''
+        b.disabled = false
+      }
     });
     this.metadata.mainActions.map(a => a.id).map(id => this.actionsMap.map.get(id)).forEach(b => {
-      b!.style.display = ''
-      b!.disabled = false
+      if (b) {
+        b.style.display = ''
+        b.disabled = false
+      }
     });
     this.metadata.sections
         .flatMap(s => s.fieldGroups)
@@ -277,7 +281,6 @@ export class MateuForm extends LitElement implements FormElement {
     const boton = (event.target as HTMLElement)
     const actionId = boton.getAttribute('actionId');
     boton.setAttribute("disabled", "disabled")
-    console.log('boton disabled')
     if (!actionId) {
       console.log('Attribute actionId is missing for ' + event.target)
       return

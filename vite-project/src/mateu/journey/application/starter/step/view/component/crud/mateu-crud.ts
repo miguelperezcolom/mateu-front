@@ -1,5 +1,5 @@
 import {css, html, LitElement, PropertyValues, TemplateResult} from 'lit'
-import {customElement, property, state} from 'lit/decorators.js'
+import {customElement, property, state, query} from 'lit/decorators.js'
 import Crud from "../../../../../../../shared/apiClients/dtos/Crud";
 import "@vaadin/horizontal-layout";
 import "@vaadin/button";
@@ -24,6 +24,10 @@ import { dialogRenderer } from 'lit-vaadin-helpers';
 import { dialogFooterRenderer } from '@vaadin/dialog/lit';
 import {MenuBarItemSelectedEvent} from "@vaadin/menu-bar";
 import {mapField} from "./crudFieldMapping";
+import {crudUpstream} from "./crudUpstream";
+import {CrudState} from "./crudstate";
+import {Subscription} from "rxjs";
+import {crudService} from "./service";
 
 /**
  * An example element.
@@ -36,6 +40,9 @@ export class MateuCrud extends LitElement {
   /**
    * Copy for the read the docs hint.
    */
+
+  @query('#grid')
+  grid!: Grid
 
   @property()
   baseUrl = ''
@@ -50,22 +57,16 @@ export class MateuCrud extends LitElement {
   stepId!: string
 
   @property()
-  timestamp!: string
-
-  @property()
   previousStepId!: string
 
   @property()
   listId!: string
 
-  searchSignature = ''
-
-
   @property()
   metadata!: Crud
 
   @property()
-  data: object | undefined;
+  data: any;
 
   @state()
   private clickedRow:unknown;
@@ -82,13 +83,6 @@ export class MateuCrud extends LitElement {
 
   @property()
   confirmationOpened = false;
-
-  @state()
-  lastFilters: string | undefined
-
-  @state()
-  lastSortOrders: string | undefined
-
 
   @property()
   closeConfirmation = () => {
@@ -107,174 +101,101 @@ export class MateuCrud extends LitElement {
   @property()
   confirmationTexts: ConfirmationTexts | undefined;
 
-  @state()
+  @property()
   count = 0;
 
-  @state()
+  @property()
   pageSize = 10;
 
-  @state()
+  @property()
   page = 0;
 
-  @state()
+  @property()
   items:any[] = []
 
-  async updated(changedProperties: Map<string, unknown>) {
-    if (changedProperties.has("searchSignature")
-    || changedProperties.has("journeyId")
-    || changedProperties.has("stepId")
-    || changedProperties.has("timestamp")
-    || changedProperties.has("listId")
-    || changedProperties.has("page")) {
-      let currentSearchSignature = this.searchSignature;
-      if (changedProperties.has("searchSignature")) {
-        currentSearchSignature = changedProperties.get("searchSignature") as string;
-      }
-      let journeyId = this.journeyId;
-      if (changedProperties.has("journeyId")) {
-        journeyId = changedProperties.get("journeyId") as string;
-      }
-      let stepId = this.stepId;
-      if (changedProperties.has("stepId")) {
-        stepId = changedProperties.get("stepId") as string;
-      }
-      let timestamp = this.timestamp;
-      if (changedProperties.has("timestamp")) {
-        timestamp = changedProperties.get("timestamp") as string;
-      }
-      let listId = this.listId;
-      if (changedProperties.has("listId")) {
-        listId = changedProperties.get("listId") as string;
-      }
-      let page = this.page;
-      if (changedProperties.has("page")) {
-        page = changedProperties.get("page") as number;
-      }
-      this.setUp();
-      console.log(currentSearchSignature, this.searchSignature)
-      if (currentSearchSignature != journeyId + '-' + stepId + '-' + timestamp + '-' + listId + '-' + page) {
-        currentSearchSignature = journeyId + '-' + stepId + '-' + timestamp + '-' + listId + '-' + page
-        console.log('signature has changed')
-        //setTimeout(() => this.search(currentSearchSignature));
-        this.search(currentSearchSignature)
-      } else {
-        console.log('signature has not changed')
-      }
+  state: CrudState = {
+    items: [],
+    count: 0,
+    page: 0,
+    sorting: [],
+    message: ''
+  }
+
+  // upstream channel
+  private upstreamSubscription: Subscription | undefined;
+
+  protected update(changedProperties: PropertyValues) {
+    super.update(changedProperties)
+    if (
+        changedProperties.has('journeyTypeId')
+        || changedProperties.has('journeyId')
+        || changedProperties.has('stepId')
+        || changedProperties.has('listId')
+    ) {
+      this.doSearch()
     }
   }
 
-  search(currentSearchSignature: string) {
-    if (currentSearchSignature && (!this.searchSignature || currentSearchSignature != this.searchSignature)) {
-      this.searchSignature = currentSearchSignature
-      console.log(currentSearchSignature, this.searchSignature)
-      this.doSearch();
-    }
-  }
-
-  doSearch() {
+  async doSearch() {
     console.log('do search!!!!')
-    const grid = this.shadowRoot!.getElementById('grid') as Grid;
 
-    if (grid) {
-      const page = this.page;
-      const pageSize = this.pageSize;
+    const page = this.page;
+    const pageSize = this.pageSize;
+    const sortOrders = this.getSortOrders()
 
-      const nodelist = grid.querySelectorAll('vaadin-grid-sort-column');
-      const columns:GridSortColumn[] = Array.from(nodelist);
-      const sortOrders = Base64.encode(JSON.stringify(columns.filter(c => c.direction).map(o => {
-        let direction = 'None';
-        if ('asc' == o.direction) direction = 'Ascending';
-        if ('desc' == o.direction) direction = 'Descending';
-        return {
-          column: o.path,
-          order: direction
-        }
-      })))
+    await this.fetchData({
+      listId: this.listId,
+      page,
+      pageSize,
+      sortOrders,
+      // @ts-ignore
+      filters: this.data,
+    });
+  }
 
-      this.fetchData({
-        page,
-        pageSize,
-        sortOrders,
-        // @ts-ignore
-        filters: this.data,
-      }).catch((error) => {
-        console.log('error', error)
-      }).then(result => {
-        const {rows, count} = result!
-        // @ts-ignore
-        if (rows.code || count.code) {
-          console.log('fetch returned error or cancelled')
-          return
-        }
-        rows.forEach((r, i) => {
-          r.__index = i + (page * pageSize);
-        })
-        this.items = rows
-      });
-    } else {
-      console.log('grid no existe')
-    }
-    //this.searchSignature = this.journeyId + '-' + this.stepId + '-' + this.timestamp + '-' + this.listId
+  getSortOrders(): string {
+    const nodelist = this.grid.querySelectorAll('vaadin-grid-sort-column');
+    const columns:GridSortColumn[] = Array.from(nodelist);
+    const sortOrders = Base64.encode(JSON.stringify(columns.filter(c => c.direction).map(o => {
+      let direction = 'None';
+      if ('asc' == o.direction) direction = 'Ascending';
+      if ('desc' == o.direction) direction = 'Descending';
+      return {
+        column: o.path,
+        order: direction
+      }
+    })))
+    return sortOrders
   }
 
   async fetchData(params: {
-    page: number;
-    pageSize: number;
-    filters: object;
-    sortOrders: string;
+    listId: string
+    page: number
+    pageSize: number
+    filters: object
+    sortOrders: string
   }) {
-    const rows = await this.fetchRows(params);
-
-    // @ts-ignore
-    if (rows.code == 'ERR_CANCELED') {
-      this.message = `Request cancelled`;
-      return {rows: [], count: 0}
-    }
-
-    // Pagination
-    this.count = await this.fetchCount(params.filters);
-    this.message = `${this.count} elements found.`;
-
-    return { rows, count: this.count };
-  }
-
-  async fetchRows(params: {
-    page: number;
-    pageSize: number;
-    filters: object;
-    sortOrders: string;
-  }): Promise<any[]> {
-    this.lastFilters = Base64.encode(JSON.stringify(params.filters));
-    this.lastSortOrders = params.sortOrders;
-    return mateuApiClient.fetchRows(this.journeyTypeId, this.journeyId,
-        this.stepId, this.listId, params.page, params.pageSize,
-        params.sortOrders, params.filters)
-  }
-
-  async fetchCount(filters: object): Promise<number> {
-    return mateuApiClient.fetchCount(this.journeyTypeId, this.journeyId,
-        this.stepId, this.listId, filters)
+    await crudService.fetch(this.state, params)
   }
 
   connectedCallback() {
     console.log('connected')
     super.connectedCallback();
-    this.setUp()
+    this.addEventListener('keydown', this.handleKey);
+    this.upstreamSubscription = crudUpstream.subscribe((state: CrudState) => this.stampState(state))
+  }
+
+  private stampState(state: CrudState) {
+    this.state = state
+    this.items = state.items
+    this.count = state.count
   }
 
   disconnectedCallback() {
     console.log('disconnected')
     this.removeEventListener('keydown', this.handleKey)
     super.disconnectedCallback();
-  }
-
-  setUp() {
-  }
-
-  protected firstUpdated(_changedProperties: PropertyValues) {
-    console.log('first updated')
-    //this.search('')
-    this.addEventListener('keydown', this.handleKey);
+    this.upstreamSubscription?.unsubscribe();
   }
 
   private handleKey(e: KeyboardEvent) {
@@ -291,41 +212,25 @@ export class MateuCrud extends LitElement {
     }
   }
 
-  stateChanged(state: any) {
-    //debugger;
-    console.log('state changed in crud', state)
-  }
-
   filterChanged(e:Event) {
     const input = e.currentTarget as HTMLInputElement;
-    console.log('input', input)
     const obj = {};
     // @ts-ignore
-    console.log('e', e)
     let newValue = null;
     // @ts-ignore
     if (e.detail && e.detail.value) {
       // @ts-ignore
       newValue = e.detail.value;
     } else {
-      newValue = input.value;
+      newValue  = input.value;
     }
     // @ts-ignore
     obj[input.id] = newValue || null;
     this.data = { ...this.data, ...obj}
   }
 
-  valueChanged(e: CustomEvent) {
-    const obj = {};
-    // @ts-ignore
-    obj[e.detail.fieldId] = e.detail.value || null;
-    this.data = { ...this.data, ...obj}
-  }
-
   async edit(e:Event) {
     const button = e.currentTarget as Button;
-    // @ts-ignore
-    console.log(button.row);
     const obj = {
       // @ts-ignore
       _selectedRow: button.row,
@@ -461,16 +366,16 @@ export class MateuCrud extends LitElement {
   exportItemSelected(event: MenuBarItemSelectedEvent) {
     let item = event.detail.value
     if (item.text == 'Excel') {
-      mateuApiClient.getXls(this.journeyTypeId, this.journeyId, this.stepId, this.listId, this.lastSortOrders!, this.lastFilters!)
+      mateuApiClient.getXls(this.journeyTypeId, this.journeyId, this.stepId, this.listId, this.getSortOrders(), this.data)
     } else if (item.text == 'Csv') {
-      mateuApiClient.getCsv(this.journeyTypeId, this.journeyId, this.stepId, this.listId, this.lastSortOrders!, this.lastFilters!)
+      mateuApiClient.getCsv(this.journeyTypeId, this.journeyId, this.stepId, this.listId, this.getSortOrders(), this.data)
     }
   }
 
   pageChanged(e: CustomEvent) {
     this.page = e.detail.page;
     console.log('page changed to ' + this.page)
-    this.doSearch()
+    this.doSearch().then()
   }
 
   render() {
@@ -493,15 +398,19 @@ export class MateuCrud extends LitElement {
       </vaadin-horizontal-layout>
       <vaadin-horizontal-layout style="align-items: baseline;" theme="spacing">
         ${this.metadata?.searchForm.fields.slice(0,1).map(f => html`
-          <vaadin-text-field id="${f.id}" data-testid="filter-${f.id}" label="${f.caption}" @change=${this.filterChanged}
+          <vaadin-text-field id="${f.id}" 
+                             data-testid="filter-${f.id}" 
+                             label="${f.caption}" 
+                             @change=${this.filterChanged}
                              placeholder="${f.placeholder}"
+                             value="${this.data[f.id]}"
                              style="flex-grow: 1;"></vaadin-text-field>
         `)}
         <vaadin-button theme="primary" @click="${this.clickedOnSearch}" data-testid="search">Search</vaadin-button>
       </vaadin-horizontal-layout>
 
       <vaadin-horizontal-layout style="align-items: baseline;" theme="spacing">
-        ${this.metadata?.searchForm.fields.slice(1).map(f => mapField(f, this.filterChanged, this.baseUrl))}
+        ${this.metadata?.searchForm.fields.slice(1).map(f => mapField(f, this.filterChanged, this.baseUrl, this.data))}
       </vaadin-horizontal-layout>
       <vaadin-grid id="grid" .items="${this.items}" all-rows-visible>
         <vaadin-grid-selection-column></vaadin-grid-selection-column>

@@ -39,6 +39,7 @@ export class Service {
         await this.reloadJourney()
         upstream.next({...state})
     }
+
 }
 
 export const service = new Service()

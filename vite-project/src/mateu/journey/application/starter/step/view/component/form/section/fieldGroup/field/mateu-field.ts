@@ -65,19 +65,18 @@ export class MateuField extends LitElement {
   @property()
   enabled!: boolean
 
-  @property()
   component: Component | undefined;
 
-  @property()
   element: HTMLElement | undefined;
 
-  @property()
   fieldWrapper?: FieldWrapper
 
   updated(changedProperties: Map<string, unknown>) {
-    this.setupComponent();
-    if (changedProperties.has("field")) {
+    if (this.field) {
+      this.setupComponent();
+      if (changedProperties.has("field")) {
         this.paint();
+      }
     }
   }
 

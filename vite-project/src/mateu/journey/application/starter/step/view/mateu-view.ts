@@ -85,16 +85,18 @@ export class MateuView extends LitElement {
 
     async updated(changedProperties: PropertyValues) {
       if (!changedProperties.has('crud')) {
-          this.crud = this.view?.main?.components?.length == 1
-              && this.view?.main?.components?.filter(c => c.metadata.type == ViewType.Crud).length > 0
-              // @ts-ignore
-              && this.view?.main?.components?.filter(c => c.metadata.type == ViewType.Crud)[0].metadata.columns.length > 2
-          ;
-          if (this.crud) {
-              this.setAttribute('crud', '')
-          } else {
-              this.removeAttribute('crud')
-          }
+          setTimeout(() => {
+              this.crud = this.view?.main?.components?.length == 1
+                  && this.view?.main?.components?.filter(c => c.metadata.type == ViewType.Crud).length > 0
+                  // @ts-ignore
+                  && this.view?.main?.components?.filter(c => c.metadata.type == ViewType.Crud)[0].metadata.columns.length > 2
+              ;
+              if (this.crud) {
+                  this.setAttribute('crud', '')
+              } else {
+                  this.removeAttribute('crud')
+              }
+          })
       }
     }
 
