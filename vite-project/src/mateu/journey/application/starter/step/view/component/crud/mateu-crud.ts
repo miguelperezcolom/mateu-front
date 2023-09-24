@@ -114,6 +114,8 @@ export class MateuCrud extends LitElement {
   items:any[] = []
 
   state: CrudState = {
+    journeyId: '',
+    listId: '',
     items: [],
     count: 0,
     page: 0,
@@ -127,12 +129,11 @@ export class MateuCrud extends LitElement {
   protected update(changedProperties: PropertyValues) {
     super.update(changedProperties)
     if (
-        changedProperties.has('journeyTypeId')
-        || changedProperties.has('journeyId')
+        changedProperties.has('journeyId')
         || changedProperties.has('stepId')
         || changedProperties.has('listId')
     ) {
-      this.doSearch()
+      this.doSearch().then()
     }
   }
 
@@ -175,7 +176,9 @@ export class MateuCrud extends LitElement {
     filters: object
     sortOrders: string
   }) {
-    await crudService.fetch(this.state, params)
+      this.state.journeyId = this.journeyId
+      this.state.listId = this.listId
+      await crudService.fetch(this.state, params)
   }
 
   connectedCallback() {
@@ -186,9 +189,12 @@ export class MateuCrud extends LitElement {
   }
 
   private stampState(state: CrudState) {
-    this.state = state
-    this.items = state.items
-    this.count = state.count
+    if (this.journeyId == state.journeyId && this.listId == state.listId) {
+      this.state = state
+      this.items = state.items
+      this.count = state.count
+      this.message = state.message
+    }
   }
 
   disconnectedCallback() {
@@ -437,10 +443,6 @@ export class MateuCrud extends LitElement {
         <div style=" flex-grow: 1;">${this.message}</div>
         <div style="justify-content: end;">
           <mateu-paginator
-                            journeyTypeId="${this.journeyTypeId}"
-                            journeyId="${this.journeyId}"
-                            stepId="${this.stepId}"
-                            baseUrl="${this.baseUrl}"
                             @page-changed="${this.pageChanged}"
                             count="${this.count}"
                             pageSize="${this.pageSize}"

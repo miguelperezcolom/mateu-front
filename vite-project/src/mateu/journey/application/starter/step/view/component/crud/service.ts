@@ -31,8 +31,16 @@ export class CrudService {
             listId: params.listId,
             filters: params.filters
         })
-        crudState.count = count
-        crudState.message = `${crudState.count} elements found.`;
+        // @ts-ignore
+        if (count.message) {
+            // @ts-ignore
+            crudState.message = count.message;
+            crudState.items = []
+            crudState.count = 0
+        } else {
+            crudState.count = count
+            crudState.message = `${crudState.count} elements found.`;
+        }
         crudUpstream.next({...crudState})
         const items = await fetchRowsQueryHandler.handle({
             journeyTypeId: state.journeyTypeId!,
@@ -44,11 +52,19 @@ export class CrudService {
             pageSize: params.pageSize,
             sortOrders: params.sortOrders
         })
-        items.forEach((r, i) => {
+        // @ts-ignore
+        if (items.message) {
             // @ts-ignore
-            r.__index = i + (params.page * params.pageSize);
-        })
-        crudState.items = items
+            crudState.message = items.message;
+            crudState.items = []
+            crudState.count = 0
+        } else {
+            items.forEach((r, i) => {
+                // @ts-ignore
+                r.__index = i + (params.page * params.pageSize);
+            })
+            crudState.items = items
+        }
         crudUpstream.next({...crudState})
     }
 

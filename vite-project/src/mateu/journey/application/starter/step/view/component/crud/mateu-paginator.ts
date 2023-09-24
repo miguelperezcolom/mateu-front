@@ -20,24 +20,6 @@ interface Page {
 @customElement('mateu-paginator')
 export class MateuPaginator extends LitElement {
 
-  /**
-   * Copy for the read the docs hint.
-   */
-  @property()
-  baseUrl = ''
-
-  @property()
-  journeyTypeId!: string
-
-  @property()
-  journeyId!: string
-
-  @property()
-  stepId!: string
-
-  @property()
-  listId!: string
-
   @property()
   count = 0
 
