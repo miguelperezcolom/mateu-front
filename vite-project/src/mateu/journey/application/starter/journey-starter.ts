@@ -120,8 +120,12 @@ export class JourneyStarter extends LitElement {
     render() {
         return html`
 
+            <div class="lds_container" style="display: ${this.loading?'':'none'};" @click="${(e: Event) => {
+                e.preventDefault()
+            }}">
                 <div class="lds-roller" style="display: ${this.loading?'':'none'};"  @click=${this.cancelAll}><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-
+            </div>
+            
             ${!this.journeyTypeId?html`
 
                 <p>No journey type defined</p>
@@ -176,6 +180,19 @@ export class JourneyStarter extends LitElement {
         position: absolute;
         left: calc(50% - 17px);
         top: calc(50% + 40px);
+    }
+    
+    .lds_container {
+        position:absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        /*
+        opacity: 50%;
+        background-color: white;
+        */
+        z-index: 99;
     }
     
 .lds-roller {
